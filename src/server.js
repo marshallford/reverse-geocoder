@@ -21,6 +21,7 @@ Object.keys(config.providers).forEach(provider => {
   })
 })
 
+// connect to redis, then start HTTP server
 client.on('connect', () => {
   app.server.listen(process.env.PORT || 8080)
   console.log(`Starting server: http://localhost:${app.server.address().port}`)

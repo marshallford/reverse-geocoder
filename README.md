@@ -1,6 +1,16 @@
-# node-esnext-boilerplate
-[![Dependencies](https://david-dm.org/marshallford/node-esnext-boilerplate.svg)](https://david-dm.org/marshallford/node-esnext-boilerplate)
-[![Dev Dependencies](https://david-dm.org/marshallford/node-esnext-boilerplate/dev-status.svg)](https://david-dm.org/marshallford/node-esnext-boilerplate#info=devDependencies)
-[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
+# Reverse Geocode REST API
 
-An opinionated, but ideally up to date NodeJS project boilerplate with ESnext support
+* Supports multiple providers
+* Caching via Redis
+* Decent error handling
+
+## Getting started
+
+* `npm install`
+* `set REVERSE_GEOCODE_GOOGLE_API_KEY env var`
+* `npm run dev`
+
+## TODO
+
+* Throttling per provider
+* Postgres/PostGIS as a provider support
