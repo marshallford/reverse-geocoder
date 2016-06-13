@@ -9,6 +9,10 @@ const app = express()
 app.server = http.createServer(app)
 app.use(bodyParser.json())
 app.use('/api/v1', api())
+app.use((err, req, res, next) => {
+  console.error(err.stack)
+  res.status(500).json({ message: 'catch-all server error, check the logs' })
+})
 
 const requiredProviderInfo = ['key', 'url', 'path', 'limit']
 
