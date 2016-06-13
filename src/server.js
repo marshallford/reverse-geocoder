@@ -10,7 +10,7 @@ app.server = http.createServer(app)
 app.use(bodyParser.json())
 app.use('/api/v1', api())
 
-const requiredProviderInfo = ['key', 'url', 'path']
+const requiredProviderInfo = ['key', 'url', 'path', 'limit']
 
 // validate config
 Object.keys(config.providers).forEach(provider => {

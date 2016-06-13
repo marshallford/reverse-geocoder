@@ -12,5 +12,7 @@
 
 ## TODO
 
-* Throttling per provider
+* ~~Throttling per provider~~
 * Postgres/PostGIS as a provider support
+* Concurrency throttling
+* Fallback on throttle (fallback in general)
