@@ -32,5 +32,5 @@ client.on('connect', () => {
 })
 
 client.on('error', (error) => {
-  console.log(error)
+  console.error(error)
 })

@@ -7,7 +7,7 @@ import config from '~/config'
 import client from '~/redis'
 
 const limiter = new RateLimiter(
-  config.providers.openstreetmap.limit.number,
+  config.providers.google.limit.number,
   config.providers.google.limit.period,
   true
 )
@@ -17,6 +17,9 @@ const api = () => {
   api.post('/reverse-geocode', (req, res) => {
     if (!req.body.lat || !req.body.lng) {
       return res.status(400).json({ message: 'lat and lng value required' })
+    }
+    if (!_.isNumber(req.body.lat) || !_.isNumber(req.body.lng)) {
+      return res.status(400).json({ message: 'lat and lng must be a number' })
     }
     const input = {
       lat: truncate(req.body.lat),
@@ -30,9 +33,9 @@ const api = () => {
         if (error || remainingRequests < 0) {
           return res.status(500).json({ message: 'provider rate limit reached' })
         }
-        axios.get(config.providers.openstreetmap.url(input.lat, input.lng, config.providers.openstreetmap.key))
+        axios.get(config.providers.google.url(input.lat, input.lng, config.providers.google.key))
           .then((response) => {
-            const result = _.get(response, config.providers.openstreetmap.path)
+            const result = _.get(response, config.providers.google.path)
             if (!result) {
               return res.status(500).json({ message: 'not a valid provider path or lat/lng' })
             }

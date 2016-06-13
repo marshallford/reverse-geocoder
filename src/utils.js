@@ -1,16 +1,14 @@
+import _ from 'lodash'
 import config from '~/config'
 
 const latlng = (lat, lng) => `${lat},${lng}`
 
 const truncate = (strNumber, truncate = config.truncate || 2) => {
+  strNumber = strNumber.toString()
   if (strNumber.indexOf('.') > 0) {
-    const decimalLength = strNumber.slice(strNumber.indexOf('.'), strNumber.length - 1).length
-    if (decimalLength < truncate) {
-      strNumber += '0'.repeat(truncate - decimalLength)
-    }
-    return strNumber.slice(0, (strNumber.indexOf('.')) + truncate + 1)
+    return _.toNumber(strNumber.slice(0, (strNumber.indexOf('.')) + truncate + 1))
   }
-  return strNumber
+  return _.toNumber(strNumber)
 }
 
 export { latlng, truncate }
