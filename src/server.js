@@ -5,6 +5,7 @@ import client from '~/redis'
 import api from '~/api'
 import config from '~/config'
 
+// define web server
 const app = express()
 app.server = http.createServer(app)
 app.use(bodyParser.json())
@@ -14,9 +15,9 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'catch-all server error, check the logs' })
 })
 
+// validate config
 const requiredProviderInfo = ['key', 'url', 'path', 'limit']
 
-// validate config
 Object.keys(config.providers).forEach(provider => {
   requiredProviderInfo.forEach(info => {
     if (!config.providers[provider][info]) {
@@ -31,6 +32,7 @@ client.on('connect', () => {
   console.log(`Starting server: http://localhost:${app.server.address().port}`)
 })
 
+// catch redis connection errors
 client.on('error', (error) => {
   console.error(error)
 })
