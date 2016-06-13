@@ -1,7 +1,8 @@
 const config = {
+  truncate: 5,
   providers: {
     google: {
-      key: process.env['REVERSE_GEOCODE_GOOGLE_API_KEY'],
+      key: process.env['REVERSE_GEOCODER_GOOGLE_API_KEY'],
       url: (lat, lng, key) => `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${key}`,
       path: 'data.results[0].formatted_address',
       limit: {
@@ -18,6 +19,7 @@ const config = {
         'period': 'second'
       }
     },
+    // for testing
     status400: {
       key: ' ',
       url: () => 'http://httpstat.us/400',
