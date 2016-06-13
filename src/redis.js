@@ -1,3 +1,3 @@
-import redis from 'redis' // DB
+import redis from 'redis'
 
 export default redis.createClient()
