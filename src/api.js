@@ -6,11 +6,23 @@ import { latlng, truncate } from '~/utils'
 import config from '~/config'
 import client from '~/redis'
 
-// define rate limiter based on provider's config
-const limiter = new RateLimiter(
-  config.providers.google.limit.number,
-  config.providers.google.limit.period,
-  true
+// get list of providers to use
+const providers = Object.keys(config.providers)
+  .filter(provider => config.providers[provider].priority !== 0)
+  .sort((x, y) => config.providers[x].priority - config.providers[y].priority)
+  .map(provider => provider)
+
+// define rate limiters based on provider's config
+const limiters = {}
+providers
+  .filter(provider => config.providers[provider].limit)
+  .forEach(provider => {
+    limiters[provider] = new RateLimiter(
+      config.providers.google.limit.number,
+      config.providers.google.limit.period,
+      true
+    )
+  }
 )
 
 const api = () => {
@@ -35,7 +47,7 @@ const api = () => {
       // if latlng key exists in redis, return cached result to client
       if (reply !== null) return res.set('redis', 'HIT').json({ 'input': input, 'output': reply })
 
-      limiter.removeTokens(1, (error, remainingRequests) => {
+      limiters['google'].removeTokens(1, (error, remainingRequests) => {
         // check if provider's defined rate limit has been reached
         if (error || remainingRequests < 0) {
           return res.status(500).json({ message: 'provider rate limit reached' })

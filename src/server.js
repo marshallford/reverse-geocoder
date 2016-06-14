@@ -16,11 +16,23 @@ app.use((err, req, res, next) => {
 })
 
 // validate config
-const requiredProviderInfo = ['key', 'url', 'path', 'limit']
+const requiredProviderInfo = ['type', 'priority', 'limit']
+const requiredHttpProviderInfo = ['key', 'url', 'path']
+const requiredPgProviderInfo = ['host', 'port', 'db', 'username', 'password']
 
 Object.keys(config.providers).forEach(provider => {
   requiredProviderInfo.forEach(info => {
-    if (!config.providers[provider][info]) {
+    if (config.providers[provider][info] === undefined) {
+      throw new Error(`Provider ${provider} is missing ${info} information`)
+    }
+  })
+  requiredHttpProviderInfo.forEach(info => {
+    if (config.providers[provider][info] === undefined && config.providers[provider].type === 'http') {
+      throw new Error(`Provider ${provider} is missing ${info} information`)
+    }
+  })
+  requiredPgProviderInfo.forEach(info => {
+    if (config.providers[provider][info] === undefined && config.providers[provider].type === 'pg') {
       throw new Error(`Provider ${provider} is missing ${info} information`)
     }
   })
