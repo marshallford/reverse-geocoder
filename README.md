@@ -16,6 +16,6 @@
 * ~~Throttling per provider~~
 * ~~lat & lng truncation~~
 * ~~Refactor API, avoid nesting~~
-* Postgres/PostGIS as a provider support
+* ~~Postgres/PostGIS as a provider support~~
 * Concurrency throttling
 * Fallback on throttle (fallback in general)
