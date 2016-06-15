@@ -8,9 +8,9 @@ const config = {
         'number': 2500,
         'period': 'day'
       },
+      path: 'data.results[0].formatted_address',
       key: process.env['REVERSE_GEOCODER_GOOGLE_API_KEY'],
-      url: (lat, lng, key) => `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${key}`,
-      path: 'data.results[0].formatted_address'
+      url: (lat, lng, key) => `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${key}`
     },
     openstreetmap: {
       type: 'http',
@@ -19,9 +19,9 @@ const config = {
         'period': 'second'
       },
       priority: 3,
+      path: 'data.display_name',
       key: 'N/A',
-      url: (lat, lng, key) => `http://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=0`,
-      path: 'data.display_name'
+      url: (lat, lng, key) => `http://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=0`
     },
     // for testing
     status400: {
@@ -31,14 +31,15 @@ const config = {
         'number': 100,
         'period': 'minute'
       },
+      path: 'data',
       key: ' ',
-      url: () => 'http://httpstat.us/400',
-      path: 'data'
+      url: () => 'http://httpstat.us/400'
     },
     postgis: {
       type: 'pg',
       limit: null,
       priority: 1,
+      path: 'rows',
       host: 'localhost',
       port: '5432',
       db: 'gisdb',

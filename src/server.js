@@ -16,8 +16,8 @@ app.use((err, req, res, next) => {
 })
 
 // validate config
-const requiredProviderInfo = ['type', 'priority', 'limit']
-const requiredHttpProviderInfo = ['key', 'url', 'path']
+const requiredProviderInfo = ['type', 'priority', 'limit', 'path']
+const requiredHttpProviderInfo = ['key', 'url']
 const requiredPgProviderInfo = ['host', 'port', 'db', 'username', 'password']
 
 Object.keys(config.providers).forEach(provider => {
