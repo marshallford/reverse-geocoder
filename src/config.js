@@ -39,12 +39,18 @@ const config = {
       type: 'pg',
       limit: null,
       priority: 1,
-      path: 'rows',
+      path: 'address',
       host: 'localhost',
       port: '5432',
       db: 'gisdb',
       username: process.env['REVERSE_GEOCODER_POSTGIS_USERNAME'],
-      password: process.env['REVERSE_GEOCODER_POSTGIS_PASSWORD']
+      password: process.env['REVERSE_GEOCODER_POSTGIS_PASSWORD'],
+      query:
+        `
+          SELECT pprint_addy(r.addy[1]) AS address,
+                 array_to_string(r.street, ',') AS cross_streets
+          FROM reverse_geocode(ST_GeomFromText('POINT($1 $2)',4326),TRUE) AS r;
+        `
     }
   }
 }
