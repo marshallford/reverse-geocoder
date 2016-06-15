@@ -2,5 +2,12 @@
   "presets": ["es2015", "stage-0"],
   "plugins": [
     ["babel-root-import", { "rootPathSuffix": "src" }]
-  ]
+  ],
+  "env": {
+    "production": {
+      "plugins": [
+        ["babel-root-import", { "rootPathSuffix": "dist" }]
+      ],
+    },
+  }
 }

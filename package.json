@@ -10,7 +10,7 @@
     "lint": "eslint src",
     "precommit": "eslint src",
     "dev": "nodemon --exec babel-node src/server.js",
-    "prestart": "rimraf dist && babel src --out-dir dist",
+    "prestart": "rimraf dist && BABEL_ENV=production babel --source-maps inline --copy-files src --out-dir dist",
     "start": "node dist/server.js",
     "test": "mocha --reporter spec --compilers js:babel-core/register"
   },
@@ -48,6 +48,7 @@
     "limiter": "^1.1.0",
     "lodash": "^4.13.1",
     "pg": "^5.1.0",
+    "pg-promise": "^4.6.4",
     "redis": "^2.6.1"
   }
 }
