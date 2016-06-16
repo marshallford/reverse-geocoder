@@ -16,5 +16,5 @@
 ## TODO
 
 * Throttling per provider
-* Save error AND lat/lng to Redis
 * Disable cache param and or clear cache
+* Save date of initial MISS to Redis

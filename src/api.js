@@ -66,7 +66,15 @@ const api = () => {
       // catch redis error
       if (error) return res.status(500).json({ message: 'problem with redis' })
       // if latlng key exists in redis, return cached result to client
-      if (reply !== null) return res.set('redis', 'HIT').json({ 'input': input, 'output': reply })
+      if (reply !== null) {
+        let output
+        try {
+          output = JSON.parse(reply)
+        } catch (error) {
+          return res.status(500).json({ message: 'problem with cached value' })
+        }
+        return res.set('redis', 'HIT').json({ 'input': input, ...output })
+      }
 
       const runner = (providers, errors = [], index = 0) => {
         const name = providers[index]
@@ -90,7 +98,7 @@ const api = () => {
             return res.status(500).json({ errors })
           } else {
             // add provider's response to the cache
-            client.set(latlng(input.lat, input.lng), result)
+            client.set(latlng(input.lat, input.lng), JSON.stringify({ output: result, errors }))
             // return result to client
             return res.set('redis', 'MISS').json({ 'input': input, 'output': result, errors })
           }
