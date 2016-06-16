@@ -26,6 +26,7 @@ providers
     )
   }
 )
+
 // define postgres databases based on provider's config
 const dbs = {}
 providers
@@ -44,7 +45,7 @@ providers
 const api = () => {
   var api = Router()
   api.get('/status', (req, res) => {
-    return res.json({ redis: client.server_info })
+    return res.json({ redis: client.server_info, providers: providers })
   })
   api.post('/reverse-geocode', (req, res) => {
     // request body should include a lat and lng key

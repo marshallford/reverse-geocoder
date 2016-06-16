@@ -9,12 +9,16 @@ const pgProvider = (name, provider, input, db) => {
       const result = _.get(response, provider.path)
       // if the result is empty assume either the provider path isn't valid or the provider responded "nicely" with bad data
       if (!result) {
-        throw new Error(`${name}: not a valid provider path or no data available`)
+        const e = new Error()
+        e.providerError = `${name}: not a valid provider path or no data available`
+        throw e
       }
       return result
     })
     .catch((response) => {
-      // on "bad" response, tell the client
+      if (response.providerError) {
+        throw new Error(response.providerError)
+      }
       throw new Error(`${name}: could not connect to provider`)
     })
 }

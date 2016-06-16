@@ -3,6 +3,8 @@
 * Supports multiple providers
 * Caching via Redis
 * Decent error handling
+* HTTP and PostgreSQL providers
+* Check system status via `/status`
 
 ## Getting started
 
@@ -13,12 +15,7 @@
 
 ## TODO
 
-* ~~Throttling per provider~~
-* ~~lat & lng truncation~~
-* ~~Refactor API, avoid nesting~~
-* ~~Postgres/PostGIS as a provider support~~
-* ~~Fallback on throttle (fallback in general)~~
-* Save error and lat/lng to Redis
-* Status endpoint
+* Throttling per provider
+* Save error AND lat/lng to Redis
 * Disable cache param
 * Concurrency throttling
