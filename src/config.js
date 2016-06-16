@@ -1,5 +1,6 @@
 const config = {
   truncate: 5,
+  log: true,
   providers: {
     google: {
       type: 'http',

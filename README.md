@@ -17,5 +17,8 @@
 * ~~lat & lng truncation~~
 * ~~Refactor API, avoid nesting~~
 * ~~Postgres/PostGIS as a provider support~~
+* ~~Fallback on throttle (fallback in general)~~
+* Save error and lat/lng to Redis
+* Status endpoint
+* Disable cache param
 * Concurrency throttling
-* Fallback on throttle (fallback in general)

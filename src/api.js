@@ -63,32 +63,36 @@ const api = () => {
       // if latlng key exists in redis, return cached result to client
       if (reply !== null) return res.set('redis', 'HIT').json({ 'input': input, 'output': reply })
 
-      let result = null
-      const errorMessages = []
-
-      for (let i = 0; i < providers.length; i++) {
-        if (!result) {
-          const name = providers[i]
-          const provider = config.providers[providers[i]]
-          if (provider.type === 'http') {
-            types['http'](name, provider, input, (response) => {
-              if (response.result) {
-                result = response.result
-              } else {
-                errorMessages.push(response.error)
-              }
-            })
+      const runner = (providers, errors = [], index = 0) => {
+        const name = providers[index]
+        const provider = config.providers[providers[index]]
+        return types[provider.type](name, provider, input, dbs[name])
+        .then((result) => {
+          return { result, errors }
+        })
+        .catch(error => {
+          errors.push(error.message)
+          if (index === providers.length - 1) {
+            return { result: null, errors }
           }
-        }
+          return runner(providers, errors, index + 1)
+        })
       }
-      if (result) {
-        // add provider's response to the cache
-        client.set(latlng(input.lat, input.lng), result)
-        // return result to client
-        return res.set('redis', 'MISS').json({ 'input': input, 'output': result })
-      } else {
-        return res.status(500).json({ messages: errorMessages })
-      }
+
+      runner(providers, [], 0)
+        .then(({ result, errors } = {}) => {
+          if (!result) {
+            return res.status(500).json({ errors })
+          } else {
+            // add provider's response to the cache
+            client.set(latlng(input.lat, input.lng), result)
+            // return result to client
+            return res.set('redis', 'MISS').json({ 'input': input, 'output': result, errors })
+          }
+        })
+        .catch(error => {
+          throw error
+        })
     })
   })
   return api
