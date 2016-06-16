@@ -17,5 +17,5 @@
 
 * Throttling per provider
 * Save error AND lat/lng to Redis
-* Disable cache param
+* Disable cache param and or clear cache
 * Concurrency throttling

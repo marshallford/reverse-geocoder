@@ -14,6 +14,15 @@ const httpProvider = (name, provider, input) => {
         e.providerError = `${name}: not a valid provider path or no data available`
         throw e
       }
+      if (provider.failures) {
+        provider.failures.forEach((failure) => {
+          if (!_.get(response, failure)) {
+            const e = new Error()
+            e.providerError = `${name}: data contains failure condition, passing over result`
+            throw e
+          }
+        })
+      }
       return result
     })
     .catch((response) => {

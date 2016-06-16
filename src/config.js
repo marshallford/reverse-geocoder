@@ -1,6 +1,10 @@
 const config = {
   truncate: 5,
-  log: true,
+  log: false,
+  redis: {
+    host: '127.0.0.1',
+    port: '6379'
+  },
   providers: {
     google: {
       type: 'http',
@@ -41,6 +45,9 @@ const config = {
       limit: null,
       priority: 1,
       path: 'address',
+      failures: [
+        'street_number'
+      ],
       host: 'localhost',
       port: '5432',
       db: 'gisdb',
@@ -49,7 +56,8 @@ const config = {
       query:
         `
           SELECT pprint_addy(r.addy[1]) AS address,
-                 array_to_string(r.street, ',') AS cross_streets
+                 array_to_string(r.street, ',') AS cross_streets,
+                 (addy[1]).address AS street_number
           FROM reverse_geocode(ST_GeomFromText('POINT($1 $2)',4326),TRUE) AS r;
         `
     }
