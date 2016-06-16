@@ -14,6 +14,7 @@ const httpProvider = (name, provider, input) => {
         e.providerError = `${name}: not a valid provider path or no data available`
         throw e
       }
+      // if a failure key does not exist or is empty, fail
       if (provider.failures) {
         provider.failures.forEach((failure) => {
           if (!_.get(response, failure)) {

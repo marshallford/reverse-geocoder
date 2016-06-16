@@ -5,7 +5,6 @@ const pgProvider = (name, provider, input, db) => {
   if (config.log) console.log(`${name} running...`)
   return db.one(provider.query, [input.lat, input.lng])
     .then((response) => {
-      console.log(response)
       // on a "good" response set result based on provider's defined path
       const result = _.get(response, provider.path)
       // if the result is empty assume either the provider path isn't valid or the provider responded "nicely" with bad data

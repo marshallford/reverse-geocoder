@@ -25,14 +25,14 @@
   },
   "homepage": "https://github.com/marshallford/node-esnext-boilerplate#readme",
   "devDependencies": {
-    "babel-cli": "^6.9.0",
+    "babel-cli": "^6.10.1",
     "babel-eslint": "^6.0.4",
     "babel-polyfill": "^6.9.1",
     "babel-preset-es2015": "^6.9.0",
     "babel-preset-stage-0": "^6.5.0",
     "babel-root-import": "^3.2.2",
     "chai": "^3.5.0",
-    "eslint": "^2.11.1",
+    "eslint": "^2.12.0",
     "eslint-config-standard": "^5.3.1",
     "eslint-plugin-babel": "^3.2.0",
     "eslint-plugin-promise": "^1.3.2",
@@ -45,10 +45,10 @@
   "dependencies": {
     "axios": "^0.12.0",
     "body-parser": "^1.15.1",
-    "express": "^4.13.4",
+    "express": "^4.14.0",
     "limiter": "^1.1.0",
     "lodash": "^4.13.1",
     "pg-promise": "^4.6.4",
-    "redis": "^2.6.1"
+    "redis": "^2.6.2"
   }
 }
