@@ -1,3 +1,4 @@
+import 'babel-polyfill'
 import http from 'http' // HTTP Server
 import express from 'express' // HTTP improvements?
 import bodyParser from 'body-parser' // Parse JSON
