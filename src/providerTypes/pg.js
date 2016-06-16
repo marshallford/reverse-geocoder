@@ -9,7 +9,7 @@ const pgProvider = (name, provider, input, db) => {
       const result = _.get(response, provider.path)
       // if the result is empty assume either the provider path isn't valid or the provider responded "nicely" with bad data
       if (!result) {
-        throw new Error(`${name}: not a valid provider path or lat/lng`)
+        throw new Error(`${name}: not a valid provider path or no data available`)
       }
       return result
     })

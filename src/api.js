@@ -43,6 +43,9 @@ providers
 
 const api = () => {
   var api = Router()
+  api.get('/status', (req, res) => {
+    return res.json({ redis: client.server_info })
+  })
   api.post('/reverse-geocode', (req, res) => {
     // request body should include a lat and lng key
     if (!req.body.lat || !req.body.lng) {
