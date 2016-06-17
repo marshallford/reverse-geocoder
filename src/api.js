@@ -45,7 +45,11 @@ providers
 const api = () => {
   var api = Router()
   api.get('/status', (req, res) => {
-    return res.json({ redis: client.server_info, providers: providers })
+    const routes = []
+    api.stack.forEach(singleRoute => {
+      routes.push(singleRoute.route.path)
+    })
+    return res.json({ redis: client.server_info, providers: providers, routes })
   })
 
   api.post('/reverse-geocode', (req, res) => {
