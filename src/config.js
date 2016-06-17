@@ -39,28 +39,28 @@ const config = {
       path: 'data',
       key: ' ',
       url: () => 'http://httpstat.us/400'
-    },
-    postgis: {
-      type: 'pg',
-      limit: null,
-      priority: 1,
-      path: 'address',
-      failures: [
-        'street_number'
-      ],
-      host: 'localhost',
-      port: '5432',
-      db: 'gisdb',
-      username: process.env['REVERSE_GEOCODER_POSTGIS_USERNAME'],
-      password: process.env['REVERSE_GEOCODER_POSTGIS_PASSWORD'],
-      query:
-        `
-          SELECT pprint_addy(r.addy[1]) AS address,
-                 array_to_string(r.street, ',') AS cross_streets,
-                 (addy[1]).address AS street_number
-          FROM reverse_geocode(ST_GeomFromText('POINT($1 $2)',4326),TRUE) AS r;
-        `
     }
+    // postgis: {
+    //   type: 'pg',
+    //   limit: null,
+    //   priority: 0,
+    //   path: 'address',
+    //   failures: [
+    //     'street_number'
+    //   ],
+    //   host: 'localhost',
+    //   port: '5432',
+    //   db: 'gisdb',
+    //   username: process.env['REVERSE_GEOCODER_POSTGIS_USERNAME'],
+    //   password: process.env['REVERSE_GEOCODER_POSTGIS_PASSWORD'],
+    //   query:
+    //     `
+    //       SELECT pprint_addy(r.addy[1]) AS address,
+    //              array_to_string(r.street, ',') AS cross_streets,
+    //              (addy[1]).address AS street_number
+    //       FROM reverse_geocode(ST_GeomFromText('POINT($1 $2)',4326),TRUE) AS r;
+    //     `
+    // }
   }
 }
 
