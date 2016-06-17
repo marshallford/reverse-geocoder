@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import { RateLimiter } from 'limiter'
 import _ from 'lodash'
+import moment from 'moment'
 import pgpModule from 'pg-promise'
 const pgp = pgpModule()
 import { latlng, truncate, toBoolean } from '~/utils'
@@ -45,11 +46,12 @@ providers
 const api = () => {
   var api = Router()
   api.get('/status', (req, res) => {
+    const uptime = moment.duration(process.uptime(), 'seconds').humanize()
     const routes = []
     api.stack.forEach(singleRoute => {
       routes.push(singleRoute.route.path)
     })
-    return res.json({ redis: client.server_info, providers: providers, routes })
+    return res.json({ redis: client.server_info, providers, routes, uptime })
   })
 
   api.post('/reverse-geocode', (req, res) => {
