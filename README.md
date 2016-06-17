@@ -36,7 +36,7 @@
 ### General configuration options
 
 |Key|Description|
-|---------------|
+|---|-----------|
 |`truncate`|number of decimal points to truncate off the lat and long|
 |`log`|enable logging, `true` or `false`|
 |`redis`|redis options hash|
@@ -44,7 +44,7 @@
 ### Provider setup
 
 |Provider key|Type|Description|
-|-----------------------------|
+|------------|----|-----------|
 |`type`|`all`|type of provider, current options: `http`, `pg`|
 |`limit`|`all`|object containing rate limiting value and time period|
 |`priority`|`all`|signifies the order in which providers will be used. A value of `0` will disable the provider. `1` is the highest priority|
