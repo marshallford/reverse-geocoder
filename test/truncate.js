@@ -1,4 +1,5 @@
 /*global describe it*/
+import 'babel-polyfill'
 import { expect } from 'chai'
 import { truncate } from '~/utils'
 

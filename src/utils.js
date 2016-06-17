@@ -13,4 +13,16 @@ const truncate = (number, truncate = config.truncate || 2) => {
   return _.toNumber(number)
 }
 
-export { latlng, truncate }
+const toBoolean = (input, truthy = ['true', 'yes', 'on']) => {
+  if (typeof (input) === 'boolean') {
+    return input
+  } else if (input === undefined || input === null) {
+    return false
+  } else if (truthy.includes(input.toString().trim().toLowerCase())) {
+    return true
+  } else {
+    return false
+  }
+}
+
+export { latlng, truncate, toBoolean }

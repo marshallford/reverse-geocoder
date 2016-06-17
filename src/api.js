@@ -3,7 +3,7 @@ import { RateLimiter } from 'limiter'
 import _ from 'lodash'
 import pgpModule from 'pg-promise'
 const pgp = pgpModule()
-import { latlng, truncate } from '~/utils'
+import { latlng, truncate, toBoolean } from '~/utils'
 import config from '~/config'
 import client from '~/redis'
 import types from '~/providerTypes'
@@ -66,7 +66,7 @@ const api = () => {
       // catch redis error
       if (error) return res.status(500).json({ message: 'problem with redis' })
       // if latlng key exists in redis, return cached result to client
-      if (reply !== null) {
+      if (reply !== null && !toBoolean(req.query.skipCache)) {
         let cached
         try {
           cached = JSON.parse(reply)

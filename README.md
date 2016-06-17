@@ -5,6 +5,7 @@
 * Decent error handling
 * HTTP and PostgreSQL providers
 * Check system status via `/status`
+* Skip over cache with `?skipCache=true`
 
 ## Getting started
 
@@ -16,5 +17,3 @@
 ## TODO
 
 * Throttling per provider
-* Disable cache param and or clear cache
-* Save date of initial MISS to Redis
