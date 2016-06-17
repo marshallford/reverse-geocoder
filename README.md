@@ -17,6 +17,15 @@
 
 ## Information
 
+### Example request
+
+```json
+{
+  "lat": 46,
+  "lng": -96
+}
+```
+
 ### Example response
 
 ```json
@@ -47,7 +56,7 @@
 |------------|----|-----------|
 |`type`|`all`|type of provider, current options: `http`, `pg`|
 |`limit`|`all`|object containing rate limiting value and time period|
-|`priority`|`all`|signifies the order in which providers will be used. A value of `0` will disable the provider. `1` is the highest priority|
+|`priority`|`all`|signifies the order in which providers will be used. A value of `0` will disable the provider, `1` is the highest priority|
 |`path`|`all`|the dot notation path of where the address is in the response|
 |`failures`|`all`|array of dot notation paths, if these keys are undefined or empty, the provider will be skipped|
 |`url`|`http`|API url to consume|
