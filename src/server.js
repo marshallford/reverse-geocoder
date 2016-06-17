@@ -2,6 +2,7 @@ import 'babel-polyfill'
 import http from 'http' // HTTP Server
 import express from 'express' // HTTP improvements?
 import bodyParser from 'body-parser' // Parse JSON
+import cors from 'cors'
 import client from '~/redis'
 import api from '~/api'
 import config from '~/config'
@@ -10,6 +11,7 @@ import config from '~/config'
 const app = express()
 app.server = http.createServer(app)
 app.use(bodyParser.json())
+app.use(cors())
 app.use('/api/v1', api())
 app.use((err, req, res, next) => {
   console.error(err.stack)
