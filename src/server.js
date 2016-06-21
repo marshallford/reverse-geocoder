@@ -10,12 +10,13 @@ import config from '~/config'
 // define web server
 const app = express()
 app.server = http.createServer(app)
+app.disable('x-powered-by')
 app.use(bodyParser.json())
 app.use(cors())
 app.use('/api/v1', api())
 app.use((err, req, res, next) => {
   console.error(err.stack)
-  res.status(500).json({ message: 'catch-all server error, check the logs' })
+  res.status(500).json({ errors: ['catch-all server error, check the logs'] })
 })
 
 // validate config

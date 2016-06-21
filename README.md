@@ -71,3 +71,5 @@
 ## TODO
 
 * Throttling per provider
+* Async logging
+* File based provider/offline support

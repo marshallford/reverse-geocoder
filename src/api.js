@@ -57,11 +57,11 @@ const api = () => {
   api.post('/reverse-geocode', (req, res) => {
     // request body should include a lat and lng key
     if (!req.body.lat || !req.body.lng) {
-      return res.status(400).json({ message: 'lat and lng value required' })
+      return res.status(400).json({ errors: ['lat and lng value required'] })
     }
     // lat and lng should be numbers
     if (!_.isNumber(req.body.lat) || !_.isNumber(req.body.lng)) {
-      return res.status(400).json({ message: 'lat and lng must be a number' })
+      return res.status(400).json({ errors: ['lat and lng must be a number'] })
     }
     // clean up lat and lng values
     const input = {
@@ -70,14 +70,14 @@ const api = () => {
     }
     client.get(latlng(input.lat, input.lng), (error, reply) => {
       // catch redis error
-      if (error) return res.status(500).json({ message: 'problem with redis' })
+      if (error) return res.status(500).json({ errors: ['problem with redis'] })
       // if latlng key exists in redis, return cached result to client
       if (reply !== null && !toBoolean(req.query.skipCache)) {
         let cached
         try {
           cached = JSON.parse(reply)
         } catch (error) {
-          return res.status(500).json({ message: 'problem with cached value' })
+          return res.status(500).json({ errors: ['problem with cached value'] })
         }
         return res.set('redis', 'HIT').json({ 'input': input, ...cached })
       }
