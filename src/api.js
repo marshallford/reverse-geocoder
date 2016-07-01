@@ -44,7 +44,7 @@ providers
 )
 
 const api = () => {
-  var api = Router()
+  let api = Router()
   api.get('/status', (req, res) => {
     const uptime = moment.duration(process.uptime(), 'seconds').humanize()
     const routes = []

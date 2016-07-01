@@ -10,10 +10,14 @@ import config from '~/config'
 // define web server
 const app = express()
 app.server = http.createServer(app)
-app.disable('x-powered-by')
+app.disable('x-powered-by') // https://github.com/helmetjs/hide-powered-by
 app.use(bodyParser.json())
-app.use(cors())
+app.use(cors()) // https://github.com/expressjs/cors#simple-usage-enable-all-cors-requests
+app.options('*', cors()) // https://github.com/expressjs/cors#enabling-cors-pre-flight
 app.use('/api/v1', api())
+app.use((req, res) => {
+  res.status(404).json({ errors: [`cannot ${req.method} ${req.path}`] })
+})
 app.use((err, req, res, next) => {
   console.error(err.stack)
   res.status(500).json({ errors: ['catch-all server error, check the logs'] })
