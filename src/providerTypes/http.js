@@ -1,9 +1,7 @@
 import _ from 'lodash'
 import axios from 'axios'
-import config from '~/config'
 
 const httpProvider = (name, provider, input) => {
-  if (config.log) console.log(`${name} running...`)
   return axios.get(provider.url(input.lat, input.lng, provider.key))
     .then((response) => {
       // on a "good" response set result based on provider's defined path

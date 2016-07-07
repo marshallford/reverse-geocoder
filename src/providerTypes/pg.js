@@ -1,8 +1,6 @@
 import _ from 'lodash'
-import config from '~/config'
 
 const pgProvider = (name, provider, input, db) => {
-  if (config.log) console.log(`${name} running...`)
   return db.one(provider.query, [input.lat, input.lng])
     .then((response) => {
       // on a "good" response set result based on provider's defined path
