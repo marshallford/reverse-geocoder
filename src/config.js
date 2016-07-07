@@ -58,8 +58,8 @@ const config = {
           SELECT pprint_addy(r.addy[1]) AS address,
                  array_to_string(r.street, ',') AS cross_streets,
                  (addy[1]).address AS street_number
-          FROM reverse_geocode(ST_GeomFromText('POINT($1 $2)',4326),TRUE) AS r;
-        `
+          FROM reverse_geocode(ST_GeomFromText('POINT($2 $1)',4326),TRUE) AS r;
+        ` // note that spatial coordinates are longitude, latitude
     }
   }
 }
