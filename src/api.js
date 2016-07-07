@@ -43,15 +43,27 @@ providers
   }
 )
 
+// default stats object if redis doesn't have a copy
+const defaultStats = {
+  lookups: {}
+}
+
 const api = () => {
   let api = Router()
   api.get('/status', (req, res) => {
     const uptime = moment.duration(process.uptime(), 'seconds').humanize()
+    const redis = client.server_info
     const routes = []
     api.stack.forEach(singleRoute => {
       routes.push(singleRoute.route.path)
     })
-    return res.json({ redis: client.server_info, providers, routes, uptime })
+
+    client.multi().dbsize().get('reverse_geocoder_stats').exec((error, replies) => {
+      if (error) return res.status(500).json({ errors: ['problem with redis'] })
+      const keys = replies[0]
+      const stats = replies[1] ? JSON.parse(replies[1]) : defaultStats
+      return res.json({ uptime, keys, providers, routes, stats, redis })
+    })
   })
 
   api.post('/reverse-geocode', (req, res) => {
@@ -98,7 +110,7 @@ const api = () => {
         })
       }
 
-      runner(providers, [], 0)
+      runner(providers)
         .then(({ result, provider, errors } = {}) => {
           if (!result) {
             return res.status(500).json({ errors })
@@ -106,6 +118,14 @@ const api = () => {
             const date = new Date().toISOString()
             // add provider's response to the cache
             client.set(latlng(input.lat, input.lng), JSON.stringify({ output: result, date_retrieved: date, provider, errors }))
+            // increment lookup count
+            client.get('reverse_geocoder_stats', (error, reply) => {
+              if (error) return
+              let stats
+              reply ? stats = JSON.parse(reply) : stats = defaultStats
+              stats.lookups[provider] ? stats.lookups[provider]++ : stats.lookups[provider] = 1
+              client.set('reverse_geocoder_stats', JSON.stringify(stats))
+            })
             // return result to client
             return res.set('redis', 'MISS').json({ 'input': input, 'output': result, date_retrieved: date, provider, errors })
           }

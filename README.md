@@ -37,6 +37,7 @@
   },
   "output": "26501-26599 210th Ave, Elbow Lake, MN 56531, USA",
   "date_retrieved": "2016-06-17T16:11:40.741Z",
+  "provider": "google",
   "errors": [
     "postgis: could not connect to provider"
   ]
