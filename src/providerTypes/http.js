@@ -2,7 +2,7 @@ import _ from 'lodash'
 import axios from 'axios'
 
 const httpProvider = (name, provider, input) => {
-  return axios.get(provider.url(input.lat, input.lng, provider.key))
+  return axios.get(provider.url(input.lat, input.lng, provider.key), { timeout: provider.timeout })
     .then((response) => {
       // on a "good" response set result based on provider's defined path
       const result = _.get(response, provider.path)

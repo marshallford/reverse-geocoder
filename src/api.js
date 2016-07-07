@@ -87,7 +87,7 @@ const api = () => {
         const provider = config.providers[providers[index]]
         return types[provider.type](name, provider, input, dbs[name])
         .then((result) => {
-          return { result, errors }
+          return { result, provider: name, errors }
         })
         .catch(error => {
           errors.push(error.message)
@@ -99,15 +99,15 @@ const api = () => {
       }
 
       runner(providers, [], 0)
-        .then(({ result, errors } = {}) => {
+        .then(({ result, provider, errors } = {}) => {
           if (!result) {
             return res.status(500).json({ errors })
           } else {
             const date = new Date().toISOString()
             // add provider's response to the cache
-            client.set(latlng(input.lat, input.lng), JSON.stringify({ output: result, date_retrieved: date, errors }))
+            client.set(latlng(input.lat, input.lng), JSON.stringify({ output: result, date_retrieved: date, provider, errors }))
             // return result to client
-            return res.set('redis', 'MISS').json({ 'input': input, 'output': result, date_retrieved: date, errors })
+            return res.set('redis', 'MISS').json({ 'input': input, 'output': result, date_retrieved: date, provider, errors })
           }
         })
         .catch(error => {

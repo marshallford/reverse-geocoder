@@ -41,7 +41,7 @@ app.use((err, req, res, next) => {
 
 // validate config
 const requiredProviderInfo = ['type', 'priority', 'limit', 'path']
-const requiredHttpProviderInfo = ['key', 'url']
+const requiredHttpProviderInfo = ['key', 'url', 'timeout']
 const requiredPgProviderInfo = ['host', 'port', 'db', 'username', 'password', 'query']
 
 Object.keys(config.providers).forEach(provider => {
