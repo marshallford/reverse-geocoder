@@ -4,6 +4,7 @@ import _ from 'lodash'
 import moment from 'moment'
 import pgpModule from 'pg-promise'
 const pgp = pgpModule()
+import { version } from '../package.json'
 import { latlng, truncate, toBoolean } from '~/utils'
 import config from '~/config'
 import client from '~/redis'
@@ -62,7 +63,7 @@ const api = () => {
       if (error) return res.status(500).json({ errors: ['problem with redis'] })
       const keys = replies[0]
       const stats = replies[1] ? JSON.parse(replies[1]) : defaultStats
-      return res.json({ uptime, keys, providers, routes, stats, redis })
+      return res.json({ uptime, keys, providers, routes, stats, version, redis })
     })
   })
 
