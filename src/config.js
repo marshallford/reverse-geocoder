@@ -5,6 +5,13 @@ const config = {
     host: '127.0.0.1',
     port: '6379'
   },
+  cors: process.env['REVERSE_GEOCODER_CORS'] || 'true',
+  stats: {
+    redisKey: 'reverse_geocoder_stats',
+    default: {
+      lookups: {}
+    }
+  },
   providers: {
     google: {
       type: 'http',

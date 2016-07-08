@@ -4,16 +4,14 @@
 * Caching via Redis
 * Decent error handling
 * HTTP and PostgreSQL providers
-* Check system status via `/status`
+* Check system status via `GET: /api/v1/status`
 * Skip over cache with `?skipCache=true`
 
 ## Getting started
 
 * `npm install`
-* set `REVERSE_GEOCODER_GOOGLE_API_KEY` env var
-* set `REVERSE_GEOCODER_LOG` env var to `true` for logging
 * `npm run dev`
-* POST to `http://localhost:8080/api/v1/reverse-geocode`
+* `POST: http://localhost:8080/api/v1/reverse-geocode`
 
 
 ## Information
@@ -44,6 +42,32 @@
 }
 ```
 
+### Example Status
+
+```json
+{
+  "uptime": "a few seconds",
+  "keys": 7,
+  "providers": [
+    "postgis",
+    "google",
+    "openstreetmap"
+  ],
+  "routes": [
+    "/status",
+    "/reverse-geocode"
+  ],
+  "stats": {
+    "lookups": {
+      "google": 14,
+      "postgis": 2
+    }
+  },
+  "version": "1.1.1",
+  "redis": "see: https://github.com/NodeRedis/node_redis#clientserver_info"
+}
+```
+
 ### General configuration options
 
 |Key|Description|
@@ -51,6 +75,9 @@
 |`truncate`|number of decimal points to truncate off the lat and long|
 |`log`|enable logging, `true` or `false`|
 |`redis`|redis options hash|
+|`cors`|enable cross-origin resource sharing, `true` or `false`|
+|`stats.redisKey`|the Redis key used to store the app's stats|
+|`stats.default`|the base stats value if the stats key doesn't exist|
 
 ### Provider setup
 
@@ -63,6 +90,7 @@
 |`failures`|`all`|array of dot notation paths, if these keys are undefined or empty, the provider will be skipped|
 |`url`|`http`|API url to consume|
 |`key`|`http`|API key used to consume the provider|
+|`timeout`|`http`|number of milliseconds before the request times out|
 |`host`|`pg`|PostgreSQL install location|
 |`port`|`pg`|port that PostgreSQL is running on|
 |`db`|`pg`|PostgreSQL database name|

@@ -8,17 +8,20 @@ import winston from 'winston' // Async logger
 import client from '~/redis'
 import api from '~/api'
 import config from '~/config'
+import { toBoolean } from '~/utils'
 
 // define web server
 const app = express()
 app.server = http.createServer(app)
 app.disable('x-powered-by') // https://github.com/helmetjs/hide-powered-by
 app.use(bodyParser.json())
-app.use(cors()) // https://github.com/expressjs/cors#simple-usage-enable-all-cors-requests
-app.options('*', cors()) // https://github.com/expressjs/cors#enabling-cors-pre-flight
+if (toBoolean(config.cors)) {
+  app.use(cors()) // https://github.com/expressjs/cors#simple-usage-enable-all-cors-requests
+  app.options('*', cors()) // https://github.com/expressjs/cors#enabling-cors-pre-flight
+}
 
 // logging middleware
-if (config.log === 'true') {
+if (toBoolean(config.log)) {
   app.use((req, res, next) => {
     winston.info(`${new Date().toISOString()} ${req.method} ${req.path}`)
     next()

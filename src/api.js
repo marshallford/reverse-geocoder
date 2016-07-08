@@ -16,6 +16,7 @@ const providers = Object.keys(config.providers)
   .sort((x, y) => config.providers[x].priority - config.providers[y].priority)
   .map(provider => provider)
 
+// TODO not in use atm
 // define rate limiters based on provider's config
 const limiters = {}
 providers
@@ -44,25 +45,21 @@ providers
   }
 )
 
-// default stats object if redis doesn't have a copy
-const defaultStats = {
-  lookups: {}
-}
-
 const api = () => {
   let api = Router()
   api.get('/status', (req, res) => {
-    const uptime = moment.duration(process.uptime(), 'seconds').humanize()
-    const redis = client.server_info
+    const uptime = moment.duration(process.uptime(), 'seconds').humanize() // process uptime
+    const redis = client.server_info // redis info at connect (not live)
+    // list of routes on /api/v1
     const routes = []
     api.stack.forEach(singleRoute => {
       routes.push(singleRoute.route.path)
     })
 
-    client.multi().dbsize().get('reverse_geocoder_stats').exec((error, replies) => {
+    client.multi().dbsize().get(config.stats.redisKey).exec((error, replies) => {
       if (error) return res.status(500).json({ errors: ['problem with redis'] })
-      const keys = replies[0]
-      const stats = replies[1] ? JSON.parse(replies[1]) : defaultStats
+      const keys = replies[0] // number of keys (live data)
+      const stats = replies[1] ? JSON.parse(replies[1]) : config.stats.default // stats object containing lookup counts
       return res.json({ uptime, keys, providers, routes, stats, version, redis })
     })
   })
@@ -86,13 +83,11 @@ const api = () => {
       if (error) return res.status(500).json({ errors: ['problem with redis'] })
       // if latlng key exists in redis, return cached result to client
       if (reply !== null && !toBoolean(req.query.skipCache)) {
-        let cached
         try {
-          cached = JSON.parse(reply)
+          return res.set('redis', 'HIT').json({ 'input': input, ...JSON.parse(reply) })
         } catch (error) {
           return res.status(500).json({ errors: ['problem with cached value'] })
         }
-        return res.set('redis', 'HIT').json({ 'input': input, ...cached })
       }
 
       const runner = (providers, errors = [], index = 0) => {
@@ -120,12 +115,13 @@ const api = () => {
             // add provider's response to the cache
             client.set(latlng(input.lat, input.lng), JSON.stringify({ output: result, date_retrieved: date, provider, errors }))
             // increment lookup count
-            client.get('reverse_geocoder_stats', (error, reply) => {
-              if (error) return
-              let stats
-              reply ? stats = JSON.parse(reply) : stats = defaultStats
-              stats.lookups[provider] ? stats.lookups[provider]++ : stats.lookups[provider] = 1
-              client.set('reverse_geocoder_stats', JSON.stringify(stats))
+            client.get(config.stats.redisKey, (error, reply) => {
+              if (!error) {
+                let stats
+                reply ? stats = JSON.parse(reply) : stats = config.stats.default
+                stats.lookups[provider] ? stats.lookups[provider]++ : stats.lookups[provider] = 1
+                client.set(config.stats.redisKey, JSON.stringify(stats))
+              }
             })
             // return result to client
             return res.set('redis', 'MISS').json({ 'input': input, 'output': result, date_retrieved: date, provider, errors })
