@@ -21,7 +21,7 @@ if (toBoolean(config.cors)) {
 }
 
 // logging middleware
-if (toBoolean(config.log)) {
+if (config.log > 0) {
   app.use((req, res, next) => {
     winston.info(`${new Date().toISOString()} ${req.method} ${req.path}`)
     next()

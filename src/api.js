@@ -66,7 +66,7 @@ const api = () => {
 
   api.post('/reverse-geocode', (req, res) => {
     // request body should include a lat and lng key
-    if (!req.body.lat || !req.body.lng) {
+    if (req.body.lat == null || req.body.lng == null) {
       return res.status(400).json({ errors: ['lat and lng value required'] })
     }
     // lat and lng should be numbers

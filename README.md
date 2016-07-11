@@ -73,7 +73,7 @@
 |Key|Description|
 |---|-----------|
 |`truncate`|number of decimal points to truncate off the lat and long|
-|`log`|enable logging, `true` or `false`|
+|`log`|`0`: no info logging, `1`: per request logging, `2`: per request logging + per provider messages|
 |`redis`|redis options hash|
 |`cors`|enable cross-origin resource sharing, `true` or `false`|
 |`stats.redisKey`|the Redis key used to store the app's stats|
