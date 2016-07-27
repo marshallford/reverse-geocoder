@@ -1,18 +1,58 @@
 {
   "name": "node-esnext-boilerplate",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "An opinionated, but ideally up to date NodeJS project boilerplate with ESnext support",
   "main": "src/server.js",
   "engines": {
     "node": ">=6.0.0"
   },
+  "private": true,
   "scripts": {
-    "lint": "eslint src",
-    "precommit": "eslint src",
-    "dev": "nodemon --exec babel-node src/server.js",
-    "prestart": "rimraf dist && BABEL_ENV=production babel --source-maps inline --copy-files src --out-dir dist",
-    "start": "node dist/server.js",
-    "test": "mocha --reporter spec --compilers js:babel-core/register"
+    "test": "better-npm-run test",
+    "lint": "better-npm-run lint",
+    "precommit": "better-npm-run precommit",
+    "dev": "better-npm-run dev",
+    "prestart": "better-npm-run prestart",
+    "start": "better-npm-run start"
+  },
+  "betterScripts": {
+    "test": {
+      "command": "mocha --reporter spec --compilers js:babel-core/register",
+      "env": {
+        "NODE_ENV": "development"
+      }
+    },
+    "lint": {
+      "command": "eslint src",
+      "env": {
+        "NODE_ENV": "development"
+      }
+    },
+    "precommit": {
+      "command": "eslint src",
+      "env": {
+        "NODE_ENV": "development"
+      }
+    },
+    "dev": {
+      "command": "nodemon --exec babel-node src/server.js",
+      "env": {
+        "NODE_ENV": "development"
+      }
+    },
+    "prestart": {
+      "command": "rimraf dist && babel --source-maps inline --copy-files src --out-dir dist",
+      "env": {
+        "NODE_ENV": "production",
+        "BABEL_ENV": "production"
+      }
+    },
+    "start": {
+      "command": "node dist/server.js",
+      "env": {
+        "NODE_ENV": "production"
+      }
+    }
   },
   "repository": {
     "type": "git",
@@ -25,32 +65,33 @@
   },
   "homepage": "https://github.com/marshallford/node-esnext-boilerplate#readme",
   "devDependencies": {
-    "babel-cli": "^6.10.1",
-    "babel-eslint": "^6.1.0",
+    "babel-cli": "^6.11.4",
+    "babel-eslint": "^6.1.2",
     "babel-polyfill": "^6.9.1",
     "babel-preset-es2015": "^6.9.0",
     "babel-preset-stage-0": "^6.5.0",
     "babel-root-import": "^4.0.1",
+    "better-npm-run": "0.0.10",
     "chai": "^3.5.0",
-    "eslint": "^3.0.1",
-    "eslint-config-standard": "^5.3.1",
+    "eslint": "^3.1.1",
+    "eslint-config-standard": "^5.3.5",
     "eslint-plugin-babel": "^3.3.0",
-    "eslint-plugin-promise": "^1.3.2",
-    "eslint-plugin-standard": "^1.3.2",
-    "husky": "^0.11.4",
+    "eslint-plugin-promise": "^2.0.0",
+    "eslint-plugin-standard": "^2.0.0",
+    "husky": "^0.11.6",
     "mocha": "^2.5.3",
-    "nodemon": "^1.9.2",
-    "rimraf": "^2.5.3"
+    "nodemon": "^1.10.0",
+    "rimraf": "^2.5.4"
   },
   "dependencies": {
-    "axios": "^0.12.0",
+    "axios": "^0.13.1",
     "body-parser": "^1.15.2",
     "cors": "^2.7.1",
     "express": "^4.14.0",
     "limiter": "^1.1.0",
-    "lodash": "^4.13.1",
+    "lodash": "^4.14.0",
     "moment": "^2.14.1",
-    "pg-promise": "^5.1.0",
+    "pg-promise": "^5.2.6",
     "redis": "^2.6.2",
     "winston": "^2.2.0"
   }

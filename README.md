@@ -1,4 +1,4 @@
-# Reverse Geocode REST API
+# Reverse Geocode RESTful API
 
 * Supports multiple providers
 * Caching via Redis
