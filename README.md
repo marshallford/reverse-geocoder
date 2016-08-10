@@ -10,7 +10,7 @@
 ## Getting started
 
 * `npm install`
-* `npm run dev`
+* `npm run dev` or `npm start` for production mode
 * `POST: http://localhost:8080/api/v1/reverse-geocode`
 
 
@@ -74,7 +74,7 @@
 |---|-----------|
 |`truncate`|number of decimal points to truncate off the lat and long|
 |`log`|`0`: no info logging, `1`: per request logging, `2`: per request logging + per provider messages|
-|`redis`|redis options hash|
+|`redis`|redis [options](https://github.com/NodeRedis/node_redis#options-object-properties)|
 |`cors`|enable cross-origin resource sharing, `true` or `false`|
 |`stats.redisKey`|the Redis key used to store the app's stats|
 |`stats.default`|the base stats value if the stats key doesn't exist|
@@ -97,6 +97,36 @@
 |`username`|`pg`|PostgreSQL username|
 |`password`|`pg`|PostgreSQL password|
 |`query`|`pg`|query to run on the database|
+
+### Running in production
+
+```
+npm start
+```
+
+To run in production I recommend [Supervisor](http://supervisord.org/) to manage the Node processes. This app utilizes [Node clustering](https://nodejs.org/api/cluster.html) so using a process manager that forks automagically like [PM2](https://github.com/Unitech/pm2) is overkill and will probably break the app.
+
+
+#### Example Supervisor config
+
+```
+[program:reverse-geocoder]
+directory=/home/ubuntu/reverse-geocoder
+command=npm start                                 
+autostart=true
+autorestart=true  
+environment=REVERSE_GEOCODER_CORS=false,REVERSE_GEOCODER_GOOGLE_API_KEY={KEY HERE},REVERSE_GEOCODER_POSTGIS_USERNAME={USERNAME HERE},REVERSE_GEOCODER_POSTGIS_PASSWORD={PASSWORD HERE}  
+stderr_logfile=/var/log/reverse-geocoder.err.log
+stdout_logfile=/var/log/reverse-geocoder.out.log
+user=ubuntu
+stopasgroup = true
+```
+
+As far as installing Node is concerned, I suggest using the [NodeSource repositories](https://github.com/nodesource/distributions) to get the latest version. Lastly, the app does require a Redis instance to cache results, you can change the Redis connection config via the `redis` key in `config.js`.
+
+## Bugs?
+
+* The lookup stat for each provider is incremented only if that provider returns a valid lookup
 
 ## TODO
 
