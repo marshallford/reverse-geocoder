@@ -56,7 +56,8 @@ const config = {
       priority: 1,
       path: 'address',
       failures: [
-        'street_number'
+        'street_number',
+        'city'
       ],
       host: 'localhost',
       port: '5432',
@@ -67,7 +68,8 @@ const config = {
         `
           SELECT pprint_addy(r.addy[1]) AS address,
                  array_to_string(r.street, ',') AS cross_streets,
-                 (addy[1]).address AS street_number
+                 (addy[1]).address AS street_number,
+                 (addy[1]).location AS city
           FROM reverse_geocode(ST_GeomFromText('POINT($2 $1)',4326),TRUE) AS r;
         ` // note that spatial coordinates are longitude, latitude
     }
