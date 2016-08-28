@@ -112,14 +112,14 @@ To run in production I recommend [Supervisor](http://supervisord.org/) to manage
 ```
 [program:reverse-geocoder]
 directory=/home/ubuntu/reverse-geocoder
-command=npm start                                 
+command=npm start
 autostart=true
-autorestart=true  
-environment=REVERSE_GEOCODER_CORS=false,REVERSE_GEOCODER_GOOGLE_API_KEY={KEY HERE},REVERSE_GEOCODER_POSTGIS_USERNAME={USERNAME HERE},REVERSE_GEOCODER_POSTGIS_PASSWORD={PASSWORD HERE}  
+autorestart=true
+environment=REVERSE_GEOCODER_CORS=false,REVERSE_GEOCODER_GOOGLE_API_KEY={KEY HERE},REVERSE_GEOCODER_POSTGIS_USERNAME={USERNAME HERE},REVERSE_GEOCODER_POSTGIS_PASSWORD={PASSWORD HERE}
 stderr_logfile=/var/log/reverse-geocoder.err.log
 stdout_logfile=/var/log/reverse-geocoder.out.log
 user=ubuntu
-stopasgroup = true
+stopasgroup=true
 ```
 
 As far as installing Node is concerned, I suggest using the [NodeSource repositories](https://github.com/nodesource/distributions) to get the latest version. Lastly, the app does require a Redis instance to cache results, you can change the Redis connection config via the `redis` key in `config.js`.
