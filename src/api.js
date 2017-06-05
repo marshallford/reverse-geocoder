@@ -3,12 +3,12 @@ import { RateLimiter } from 'limiter'
 import _ from 'lodash'
 import moment from 'moment'
 import pgpModule from 'pg-promise'
-const pgp = pgpModule()
 import { version } from '../package.json'
 import { latlng, truncate, toBoolean } from '~/utils'
 import config from '~/config'
 import client from '~/redis'
 import types from '~/providerTypes'
+const pgp = pgpModule()
 
 // get list of providers to use
 const providers = Object.keys(config.providers)
@@ -40,7 +40,7 @@ providers
       port: config.providers[provider].port,
       database: config.providers[provider].db,
       user: config.providers[provider].username,
-      password: config.providers[provider].password
+      password: config.providers[provider].password,
     })
   }
 )
@@ -76,7 +76,7 @@ const api = () => {
     // clean up lat and lng values
     const input = {
       lat: truncate(req.body.lat),
-      lng: truncate(req.body.lng)
+      lng: truncate(req.body.lng),
     }
     client.get(latlng(input.lat, input.lng), (error, reply) => {
       // catch redis error

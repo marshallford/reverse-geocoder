@@ -1,7 +1,15 @@
 {
-  "presets": ["es2015", "stage-0"],
+  "comments": false,
+  "presets": [
+    ["env", {
+      "targets": {
+        "node": "current"
+      }
+    }]
+  ],
   "plugins": [
-    ["babel-root-import", { "rootPathSuffix": "src" }]
+    ["babel-root-import", { "rootPathSuffix": "src" }],
+    ["transform-object-rest-spread"]
   ],
   "env": {
     "production": {

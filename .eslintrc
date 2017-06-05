@@ -10,7 +10,6 @@
     "node": true
   },
   "rules": {
-    "generator-star-spacing": 0,
-    "babel/generator-star-spacing": 1
+    "comma-dangle": ["error", "always-multiline"],
   }
 }

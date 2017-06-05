@@ -13,6 +13,15 @@ const app = express()
 app.server = http.createServer(app)
 app.disable('x-powered-by') // https://github.com/helmetjs/hide-powered-by
 app.use(bodyParser.json())
+// bodyParser error handling
+app.use((err, req, res, next) => {
+  if (err instanceof SyntaxError && err.statusCode === 400) {
+    winston.error(err.stack)
+    res.status(400).json({ errors: ['invalid json'] })
+  } else {
+    next(err)
+  }
+})
 if (toBoolean(config.cors)) {
   app.use(cors()) // https://github.com/expressjs/cors#simple-usage-enable-all-cors-requests
   app.options('*', cors()) // https://github.com/expressjs/cors#enabling-cors-pre-flight
