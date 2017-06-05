@@ -74,7 +74,8 @@
 |---|-----------|
 |`truncate`|number of decimal points to truncate off the lat and long|
 |`log`|`0`: no info logging, `1`: per request logging, `2`: per request logging + per provider messages|
-|`redis`|redis [options](https://github.com/NodeRedis/node_redis#options-object-properties)|
+|`redis`|[redis options](https://github.com/NodeRedis/node_redis#options-object-properties)|
+|`port`|the port that express (http) will listen on|
 |`cors`|enable cross-origin resource sharing, `true` or `false`|
 |`stats.redisKey`|the Redis key used to store the app's stats|
 |`stats.default`|the base stats value if the stats key doesn't exist|

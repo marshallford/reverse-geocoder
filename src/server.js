@@ -4,6 +4,7 @@ import cluster from 'cluster'
 import os from 'os'
 import client from '~/redis'
 import app from '~/app'
+import config from '~/config'
 
 if (cluster.isMaster) {
   if (process.env.NODE_ENV === 'development') {
@@ -25,7 +26,7 @@ if (cluster.isMaster) {
 } else {
   // connect to redis, then start HTTP server
   client.on('connect', () => {
-    app.server.listen(process.env.PORT || 8080, () => {
+    app.server.listen(config.port, () => {
       winston.info(`starting server: http://localhost:${app.server.address().port} (${cluster.worker.process.pid})`)
     })
   })

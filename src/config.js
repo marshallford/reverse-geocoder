@@ -5,6 +5,7 @@ const config = {
     host: '127.0.0.1',
     port: '6379',
   },
+  port: parseInt(process.env['REVERSE_GEOCODER_PORT']) || 8080,
   cors: process.env['REVERSE_GEOCODER_CORS'] || 'true',
   stats: {
     redisKey: 'reverse_geocoder_stats',
