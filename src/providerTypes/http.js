@@ -10,6 +10,14 @@ const httpProvider = (name, provider, input) => {
     .then((response) => {
       // on a "good" response set result based on provider's defined path
       const result = _.get(response, provider.path)
+      // get extra data if possible
+      let extras = {}
+      if (!provider.extrasPath || !provider.extras) {
+        if (config.log > 1) winston.info(`${name}: missing config options for extras`)
+      } else {
+        extras = provider.extras(_.get(response, provider.extrasPath))
+      }
+
       // if the result is empty assume either the provider path isn't valid or the provider responded "nicely" with bad data
       if (!result) {
         const e = new Error()
@@ -28,12 +36,15 @@ const httpProvider = (name, provider, input) => {
           }
         })
       }
-      if (config.log > 1) winston.info(`${name}: success (${result})`)
-      return result
+      if (config.log > 1) winston.info(`${name}: success (${JSON.stringify(result, null, 2)})`)
+      return {
+        output: result,
+        extras,
+      }
     })
-    .catch((response) => {
-      if (response.providerError) {
-        throw new Error(response.providerError)
+    .catch((err) => {
+      if (err.providerError) {
+        throw new Error(err.providerError)
       }
       const error = `${name}: could not connect to provider`
       if (config.log > 1) winston.info(error)

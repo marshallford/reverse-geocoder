@@ -1,33 +1,52 @@
+import customGoogle from './google'
+
 const config = {
   truncate: 5,
   log: parseInt(process.env['REVERSE_GEOCODER_LOG']) || 0,
   redis: {
-    host: '127.0.0.1',
-    port: '6379',
+    options: {
+      host: '127.0.0.1',
+      port: '6379',
+    },
+    ttl: 60 * 24 * 30 * 1, // 1 month expiration
   },
   port: parseInt(process.env['REVERSE_GEOCODER_PORT']) || 8080,
   cors: process.env['REVERSE_GEOCODER_CORS'] || 'true',
   stats: {
-    redisKey: 'reverse_geocoder_stats',
-    default: {
-      lookups: {},
-    },
+    redisKey: 'stats',
   },
   providers: {
+    googleroads: {
+      type: 'http',
+      scope: 'speed_limit',
+      priority: 1,
+      limit: {
+        number: 10000,
+        period: 'day',
+      },
+      path: 'data.speedLimits[0]',
+      key: process.env['REVERSE_GEOCODER_GOOGLE_API_KEY'],
+      url: (lat, lng, key) => `https://roads.googleapis.com/v1/speedLimits?units=MPH&path=${lat},${lng}&key=${key}`,
+      timeout: 500,
+    },
     google: {
       type: 'http',
+      scope: 'reverse_geocode',
       priority: 2,
       limit: {
-        'number': 2500,
-        'period': 'day',
+        'number': 180000,
+        'period': 'hour',
       },
       path: 'data.results[0].formatted_address',
       key: process.env['REVERSE_GEOCODER_GOOGLE_API_KEY'],
       url: (lat, lng, key) => `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${key}`,
       timeout: 500,
+      extrasPath: 'data.results[0].address_components',
+      extras: (result) => customGoogle(result),
     },
     openstreetmap: {
       type: 'http',
+      scope: 'reverse_geocode',
       limit: {
         'number': 1,
         'period': 'second',
@@ -41,6 +60,7 @@ const config = {
     // for testing
     status400: {
       type: 'http',
+      scope: 'reverse_geocode',
       priority: 0,
       limit: {
         'number': 100,
@@ -53,17 +73,18 @@ const config = {
     },
     postgis: {
       type: 'pg',
+      scope: 'reverse_geocode',
       limit: null,
       priority: 1,
       path: 'address',
       failures: [
-        'street_number',
+        // 'street_number',
         'city',
       ],
       host: 'localhost',
       port: '5432',
-      db: 'gisdb',
-      username: process.env['REVERSE_GEOCODER_POSTGIS_USERNAME'],
+      database: 'gisdb',
+      user: process.env['REVERSE_GEOCODER_POSTGIS_USERNAME'],
       password: process.env['REVERSE_GEOCODER_POSTGIS_PASSWORD'],
       query:
         `
