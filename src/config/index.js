@@ -76,24 +76,26 @@ const config = {
       scope: 'reverse_geocode',
       limit: null,
       priority: 1,
-      path: 'address',
+      path: 'rows[0].address',
       failures: [
-        // 'street_number',
-        'city',
+        // 'rows[0].street_number',
+        'rows[0].city',
       ],
       host: 'localhost',
       port: '5432',
       database: 'gisdb',
       user: process.env['REVERSE_GEOCODER_POSTGIS_USERNAME'],
       password: process.env['REVERSE_GEOCODER_POSTGIS_PASSWORD'],
-      query:
-        `
+      sql: (lat, lng) => ({
+        query: `
           SELECT pprint_addy(r.addy[1]) AS address,
                  array_to_string(r.street, ',') AS cross_streets,
                  (addy[1]).address AS street_number,
                  (addy[1]).location AS city
-          FROM reverse_geocode(ST_GeomFromText('POINT($2 $1)',4326),TRUE) AS r;
-        `, // note that spatial coordinates are ordered longitude, latitude in postgis
+          FROM reverse_geocode(ST_GeomFromText($1, 4326),TRUE) AS r;
+        `,
+        params: [`POINT(${lng} ${lat})`], // note that spatial coordinates are ordered longitude, latitude in postgis
+      }),
     },
   },
 }

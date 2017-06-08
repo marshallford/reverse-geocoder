@@ -137,7 +137,7 @@ The reverse-geocode and speed-limit endpoints both take the same input:
 |`database`|`pg`|PostgreSQL database name|
 |`user`|`pg`|PostgreSQL username|
 |`password`|`pg`|PostgreSQL password|
-|`query`|`pg`|query to run on the database|
+|`sql`|`pg`|a map with two keys, the query to run and the params to pass|
 
 ### Running in production
 

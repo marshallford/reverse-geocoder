@@ -2,12 +2,12 @@ import _ from 'lodash'
 import winston from 'winston'
 import config from '~/config'
 import { latlng, providers } from '~/utils'
-import pgpModule from 'pg-promise'
-const pgp = pgpModule()
+import pg from 'pg'
 
 const pgProvider = (name, provider, input) => {
   if (config.log > 1) winston.info(`${name}: ${latlng(input.lat, input.lng)}`)
-  return dbs[name].one(provider.query, [input.lat, input.lng])
+  const sql = provider.sql(input.lat, input.lng)
+  return dbs[name].query(sql.query, sql.params)
     .then((response) => {
       // on a "good" response set result based on provider's defined path
       const result = _.get(response, provider.path)
@@ -58,7 +58,16 @@ const dbs = {}
 providers
   .filter(providerName => config.providers[providerName].type === 'pg')
   .forEach(providerName => {
-    dbs[providerName] = pgp(_.pick(config.providers[providerName], ['host', 'port', 'database', 'user', 'password']))
+    dbs[providerName] = new pg.Pool({ max: 1, ..._.pick(config.providers[providerName], ['host', 'port', 'database', 'user', 'password']) })
+    dbs[providerName].on('error', (err, client) => {
+      // if an error is encountered by a client while it sits idle in the pool
+      // the pool itself will emit an error event with both the error and
+      // the client which emitted the original error
+      // this is a rare occurrence but can happen if there is a network partition
+      // between your application and the database, the database restarts, etc.
+      // and so you might want to handle it and at least log it out
+      winston.error('idle client error', err.message, err.stack)
+    })
   }
 )
 
