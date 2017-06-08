@@ -1,4 +1,4 @@
-import customGoogle from './google'
+import googleExtras from './extras/google'
 
 const config = {
   truncate: 5,
@@ -42,7 +42,7 @@ const config = {
       url: (lat, lng, key) => `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${key}`,
       timeout: 500,
       extrasPath: 'data.results[0].address_components',
-      extras: (result) => customGoogle(result),
+      extras: (result) => googleExtras(result),
     },
     openstreetmap: {
       type: 'http',

@@ -35,7 +35,9 @@ const reverseGeocodeAndSpeedLimitRoute = (scope) => {
           } else {
             const date = new Date().toISOString()
             // add provider's response to the cache
-            client.set(prefixedlatlng(input.lat, input.lng), JSON.stringify({ ...result, date_retrieved: date, provider, errors }), 'EX', config.redis.ttl)
+            const key = prefixedlatlng(input.lat, input.lng)
+            const value = JSON.stringify({ ...result, date_retrieved: date, provider, errors })
+            _.has(config, 'redis.ttl') ? client.set(key, value, 'EX', config.redis.ttl) : client.set(key, value)
             // increment lookup count
             client.get(config.stats.redisKey, (error, reply) => {
               if (!error) {
