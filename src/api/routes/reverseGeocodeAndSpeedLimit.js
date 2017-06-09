@@ -1,13 +1,14 @@
 import { Router } from 'express'
+import winston from 'winston'
 import _ from 'lodash'
-import { latlng, latlngValidator, toBoolean, providers } from '~/utils'
+import { latlng, latlngValidator, toBoolean, providers, ProviderError } from '~/utils'
 import config from '~/config'
 import client from '~/redis'
-import runner from '~/api/runner'
+import types from '~/providerTypes'
 
 const reverseGeocodeAndSpeedLimitRoute = (scope) => {
   let r = Router()
-  r.post('/', (req, res) => {
+  r.post('/', async (req, res) => {
     const prefixedlatlng = (lat, lng) => `${scope}/${latlng(lat, lng)}`
 
     let input
@@ -16,49 +17,74 @@ const reverseGeocodeAndSpeedLimitRoute = (scope) => {
     } catch (err) {
       return res.status(400).json({ errors: [err.message] })
     }
-    client.get(prefixedlatlng(input.lat, input.lng), (error, reply) => {
-      // catch redis error
-      if (error) return res.status(500).json({ errors: ['problem with redis'] })
-      // if latlng key exists in redis, return cached result to client
-      if (reply !== null && !toBoolean(req.query.skipCache)) {
-        try {
-          return res.set('redis', 'HIT').json({ input, ...JSON.parse(reply) })
-        } catch (error) {
-          return res.status(500).json({ errors: ['problem with cached value'] })
+
+    // check for cached value
+    if (!toBoolean(req.query.skipCache)) {
+      try {
+        const reply = await client.getAsync(prefixedlatlng(input.lat, input.lng))
+        if (reply !== null) {
+          return await res.setAsync('redis', 'HIT').json({ input, ...JSON.parse(reply) })
+        }
+      } catch (err) {
+        if (err instanceof SyntaxError) {
+          return res.status(500).json({ errors: ['problem parsing cached value'] })
+        } else {
+          return res.status(500).json({ errors: ['problem with redis/cached value'] })
         }
       }
+    }
 
-      runner(providers.filter(provider => config.providers[provider].scope === scope), input)
-        .then(({ result, provider, errors } = {}) => {
-          if (!result) {
-            return res.status(500).json({ errors })
-          } else {
-            const date = new Date().toISOString()
-            // add provider's response to the cache
-            const key = prefixedlatlng(input.lat, input.lng)
-            const value = JSON.stringify({ ...result, date_retrieved: date, provider, errors })
-            _.has(config, 'redis.ttl') ? client.set(key, value, 'EX', config.redis.ttl) : client.set(key, value)
-            // increment lookup count
-            client.get(config.stats.redisKey, (error, reply) => {
-              if (!error) {
-                let stats = {}
-                if (reply) stats = JSON.parse(reply)
-                if (_.has(stats, `lookups.${scope}.${provider}`)) {
-                  stats.lookups[scope][provider]++
-                } else {
-                  _.set(stats, `lookups.${scope}.${provider}`, 0)
-                }
-                client.set(config.stats.redisKey, JSON.stringify(stats))
-              }
-            })
-            // return result to client
-            return res.set('redis', 'MISS').json({ input, ...result, date_retrieved: date, provider, errors })
-          }
-        })
-        .catch(error => {
-          throw error
-        })
-    })
+    // Missed cache
+    let result, provider
+    const errors = []
+    const providersInScope = providers.filter(provider => config.providers[provider].scope === scope)
+
+    // iterate over providers in the request scope
+    for (let index in providersInScope) {
+      provider = providersInScope[index]
+      const info = config.providers[provider]
+      try {
+        result = await types[info.type](provider, info, input)
+        break
+      } catch (err) {
+        if (err instanceof ProviderError) {
+          errors.push(err.message)
+        } else {
+          throw err
+        }
+      }
+    }
+    if (!result) {
+      // no valid providers
+      return res.status(500).json({ errors })
+    } else {
+      // add valid result to cache, updates stats
+      const date = new Date().toISOString()
+      // add provider's response to the cache
+      const key = prefixedlatlng(input.lat, input.lng)
+      const value = JSON.stringify({ ...result, date_retrieved: date, provider, errors })
+      try {
+        _.has(config, 'redis.ttl') ? client.setAsync(key, value, 'EX', config.redis.ttl) : client.setAsync(key, value)
+      } catch (err) {
+        return res.status(500).json({ errors: ['problem with redis'] })
+      }
+      try {
+        let stats = {}
+        const reply = await client.getAsync(config.stats.redisKey)
+        if (reply) stats = JSON.parse(reply)
+        if (_.has(stats, `lookups.${scope}.${provider}`)) {
+          stats.lookups[scope][provider]++
+        } else {
+          _.set(stats, `lookups.${scope}.${provider}`, 0)
+        }
+        await client.setAsync(config.stats.redisKey, JSON.stringify(stats))
+      } catch (err) {
+        winston.error(`${provider}: could not get/set stats key or could not parse key`)
+      }
+
+      // return result to client
+      return res.set('redis', 'MISS').json({ input, ...result, date_retrieved: date, provider, errors })
+    }
   })
   return r
 }

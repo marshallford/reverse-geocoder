@@ -31,7 +31,7 @@ if (cluster.isMaster) {
     })
   })
   // catch redis connection errors
-  client.on('error', (error) => {
-    winston.error(error)
+  client.on('error', (err) => {
+    winston.error('redis client error', err.message, err.stack)
   })
 }

@@ -47,4 +47,6 @@ const providers = Object.keys(config.providers)
   .sort((x, y) => config.providers[x].priority - config.providers[y].priority)
   .map(provider => provider)
 
-export { latlng, latlngValidator, truncate, toBoolean, providers }
+class ProviderError extends Error {}
+
+export { latlng, latlngValidator, truncate, toBoolean, providers, ProviderError }

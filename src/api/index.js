@@ -26,7 +26,7 @@ const api = () => {
   api.use('/reverse-geocode', reverseGeocodeAndSpeedLimitRoute('reverse_geocode'))
   api.use('/speed-limit', reverseGeocodeAndSpeedLimitRoute('speed_limit'))
 
-  api.get('/status', (req, res) => {
+  api.get('/status', async (req, res) => {
     const uptime = moment.duration(process.uptime(), 'seconds').humanize() // process uptime
     const redis = client.server_info // redis info at connect (not live)
     // list of routes on /api/v1
@@ -35,12 +35,17 @@ const api = () => {
     // api.stack.forEach(singleRoute => {
     //   routes.push(singleRoute.route.path)
     // })
-
-    client.multi().dbsize().get(config.stats.redisKey).exec((error, [keys, rawStats]) => {
-      if (error) return res.status(500).json({ errors: ['problem with redis'] })
+    try {
+      const [keys, rawStats] = await client.multi().dbsize().get(config.stats.redisKey).execAsync()
       const stats = rawStats ? JSON.parse(rawStats) : {} // stats object containing lookup counts
       return res.json({ uptime, keys, providers, routes, stats, version, redis })
-    })
+    } catch (err) {
+      if (err instanceof SyntaxError) {
+        return res.status(500).json({ errors: ['problem parsing cached value'] })
+      } else {
+        return res.status(500).json({ errors: ['problem with redis/cached value'] })
+      }
+    }
   })
 
   return api

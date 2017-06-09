@@ -16,7 +16,7 @@ app.use(bodyParser.json())
 // bodyParser error handling
 app.use((err, req, res, next) => {
   if (err instanceof SyntaxError && err.statusCode === 400) {
-    winston.error(err.stack)
+    winston.error('likely a bodyParser error', err.message, err.stack)
     res.status(400).json({ errors: ['invalid json'] })
   } else {
     next(err)
@@ -45,7 +45,7 @@ app.use((req, res) => {
 
 // 500
 app.use((err, req, res, next) => {
-  winston.error(err.stack)
+  winston.error('catch-all error', err.message, err.stack)
   res.status(500).json({ errors: ['catch-all server error, check the logs'] })
 })
 
