@@ -16,7 +16,7 @@
   },
   "betterScripts": {
     "test": {
-      "command": "mocha --reporter spec --compilers js:babel-core/register",
+      "command": "mocha --watch --reporter spec --compilers js:babel-core/register",
       "env": {
         "NODE_ENV": "test"
       }
