@@ -19,11 +19,11 @@ const reverseGeocodeAndSpeedLimitRoute = (scope) => {
     }
 
     // check for cached value
-    if (!toBoolean(req.query.skipCache)) {
+    if (!toBoolean(req.query.skipCache) && !toBoolean(req.query.replaceCache)) {
       try {
         const reply = await client.getAsync(prefixedlatlng(input.lat, input.lng))
         if (reply !== null) {
-          return await res.setAsync('redis', 'HIT').json({ input, ...JSON.parse(reply) })
+          return res.set('redis', 'HIT').json({ input, ...JSON.parse(reply) })
         }
       } catch (err) {
         if (err instanceof SyntaxError) {
@@ -61,27 +61,28 @@ const reverseGeocodeAndSpeedLimitRoute = (scope) => {
       // add valid result to cache, updates stats
       const date = new Date().toISOString()
       // add provider's response to the cache
-      const key = prefixedlatlng(input.lat, input.lng)
-      const value = JSON.stringify({ ...result, date_retrieved: date, provider, errors })
-      try {
-        _.has(config, 'redis.ttl') ? client.setAsync(key, value, 'EX', config.redis.ttl) : client.setAsync(key, value)
-      } catch (err) {
-        return res.status(500).json({ errors: ['problem with redis'] })
-      }
-      try {
-        let stats = {}
-        const reply = await client.getAsync(config.stats.redisKey)
-        if (reply) stats = JSON.parse(reply)
-        if (_.has(stats, `lookups.${scope}.${provider}`)) {
-          stats.lookups[scope][provider]++
-        } else {
-          _.set(stats, `lookups.${scope}.${provider}`, 0)
+      if (!toBoolean(req.query.skipCache)) {
+        const key = prefixedlatlng(input.lat, input.lng)
+        const value = JSON.stringify({ ...result, date_retrieved: date, provider, errors })
+        try {
+          _.has(config, 'redis.ttl') ? client.setAsync(key, value, 'EX', config.redis.ttl) : client.setAsync(key, value)
+        } catch (err) {
+          return res.status(500).json({ errors: ['problem with redis'] })
         }
-        await client.setAsync(config.stats.redisKey, JSON.stringify(stats))
-      } catch (err) {
-        winston.error(`${provider}: could not get/set stats key or could not parse key`)
+        try {
+          let stats = {}
+          const reply = await client.getAsync(config.stats.redisKey)
+          if (reply) stats = JSON.parse(reply)
+          if (_.has(stats, `lookups.${scope}.${provider}`)) {
+            stats.lookups[scope][provider]++
+          } else {
+            _.set(stats, `lookups.${scope}.${provider}`, 0)
+          }
+          await client.setAsync(config.stats.redisKey, JSON.stringify(stats))
+        } catch (err) {
+          winston.error(`${provider}: could not get/set stats key or could not parse key`)
+        }
       }
-
       // return result to client
       return res.set('redis', 'MISS').json({ input, ...result, date_retrieved: date, provider, errors })
     }

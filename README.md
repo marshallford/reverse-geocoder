@@ -7,6 +7,7 @@
 * HTTP and PostgreSQL providers
 * Check system status via `GET: /api/v1/status`
 * Skip over cache with `?skipCache=true`
+* Replace cache with `?replaceCache=true`
 
 ## Getting started
 
