@@ -39,27 +39,27 @@ The reverse-geocode and speed-limit endpoints both take the same input:
 
 ```json
 {
-	"input": {
-		"lat": 46.86675,
-		"lng": -96.79474
-	},
-	"output": "948-998 8th Ave S, Fargo, ND 58103, USA",
-	"extras": {
-		"street_number": "948-998",
-		"route": "8th Avenue South",
-		"neighborhood": "Hawthorne",
-		"locality": "Fargo",
-		"county": "Cass County",
-		"state": "North Dakota",
-		"country": "United States",
-		"zip_code": "58103",
-		"location": "Fargo, North Dakota, United States"
-	},
-	"date_retrieved": "2017-06-12T19:55:28.018Z",
-	"provider": "google",
-	"errors": [
-		"postgis: could not connect to provider"
-	]
+  "input": {
+    "lat": 46.86675,
+    "lng": -96.79474
+  },
+  "output": "948-998 8th Ave S, Fargo, ND 58103, USA",
+  "extras": {
+    "street_number": "948-998",
+    "route": "8th Avenue South",
+    "neighborhood": "Hawthorne",
+    "locality": "Fargo",
+    "county": "Cass County",
+    "state": "North Dakota",
+    "country": "United States",
+    "zip_code": "58103",
+    "location": "Fargo, North Dakota, United States"
+  },
+  "date_retrieved": "2017-06-12T19:55:28.018Z",
+  "provider": "google",
+  "errors": [
+    "postgis: could not connect to provider"
+  ]
 }
 ```
 
@@ -67,19 +67,19 @@ The reverse-geocode and speed-limit endpoints both take the same input:
 
 ``` json
 {
-	"input": {
-		"lat": 46.86675,
-		"lng": -96.79474
-	},
-	"output": {
-		"placeId": "ChIJpZOQ0-LLyFIRvmnyMbeiQNw",
-		"speedLimit": 25,
-		"units": "MPH"
-	},
-	"extras": {},
-	"date_retrieved": "2017-06-12T19:54:58.749Z",
-	"provider": "googleroads",
-	"errors": []
+  "input": {
+    "lat": 46.86675,
+    "lng": -96.79474
+  },
+  "output": {
+    "placeId": "ChIJpZOQ0-LLyFIRvmnyMbeiQNw",
+    "speedLimit": 25,
+    "units": "MPH"
+  },
+  "extras": {},
+  "date_retrieved": "2017-06-12T19:54:58.749Z",
+  "provider": "googleroads",
+  "errors": []
 }
 ```
 
@@ -88,31 +88,31 @@ The reverse-geocode and speed-limit endpoints both take the same input:
 
 ```json
 {
-	"uptime": "2 minutes",
-	"keys": 8,
-	"providers": [
-		"postgis",
-		"googleroads",
-		"google",
-		"openstreetmap"
-	],
-	"routes": [
-		"/status",
-		"/reverse-geocode",
-		"/speed-limit"
-	],
-	"stats": {
-		"lookups": {
-			"reverse_geocode": {
-				"google": 5
-			},
-			"speed_limit": {
-				"googleroads": 4
-			}
-		}
-	},
-	"version": "2.0.0",
-	"redis": "see: https://github.com/NodeRedis/node_redis#clientserver_info"
+  "uptime": "2 minutes",
+  "keys": 8,
+  "providers": [
+    "postgis",
+    "googleroads",
+    "google",
+    "openstreetmap"
+  ],
+  "routes": [
+    "/status",
+    "/reverse-geocode",
+    "/speed-limit"
+  ],
+  "stats": {
+    "lookups": {
+      "reverse_geocode": {
+        "google": 5
+      },
+      "speed_limit": {
+        "googleroads": 4
+      }
+    }
+  },
+  "version": "2.0.0",
+  "redis": "see: https://github.com/NodeRedis/node_redis#clientserver_info"
 }
 ```
 
