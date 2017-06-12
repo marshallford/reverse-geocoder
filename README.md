@@ -1,5 +1,8 @@
 # Reverse Geocode RESTful API
 
+[![license](https://img.shields.io/github/license/marshallford/reverse-geocoder.svg)]()
+[![Build Status](https://travis-ci.org/marshallford/reverse-geocoder.svg?branch=master)](https://travis-ci.org/marshallford/reverse-geocoder)
+
 * Supports multiple reverse-geocode providers
 * Supports speed limit lookups (currently only via google)
 * Caching via Redis
@@ -36,27 +39,27 @@ The reverse-geocode and speed-limit endpoints both take the same input:
 
 ```json
 {
-  "input": {
-    "lat": 46,
-    "lng": -96
-  },
-  "output": "26501-26599 210th Ave, Elbow Lake, MN 56531, USA",
-  "extras":{
-    "street_number":"26501-26599",
-    "route":"210th Avenue",
-    "locality":"Elbow Lake",
-    "township":"Sanford Township",
-    "county":"Grant County",
-    "state":"Minnesota",
-    "country":"United States",
-    "zip_code":"56531",
-    "location":"Elbow Lake, Minnesota, United States"
-  },
-  "date_retrieved": "2016-06-17T16:11:40.741Z",
-  "provider": "google",
-  "errors": [
-    "postgis: could not connect to provider"
-  ]
+	"input": {
+		"lat": 46.86675,
+		"lng": -96.79474
+	},
+	"output": "948-998 8th Ave S, Fargo, ND 58103, USA",
+	"extras": {
+		"street_number": "948-998",
+		"route": "8th Avenue South",
+		"neighborhood": "Hawthorne",
+		"locality": "Fargo",
+		"county": "Cass County",
+		"state": "North Dakota",
+		"country": "United States",
+		"zip_code": "58103",
+		"location": "Fargo, North Dakota, United States"
+	},
+	"date_retrieved": "2017-06-12T19:55:28.018Z",
+	"provider": "google",
+	"errors": [
+		"postgis: could not connect to provider"
+	]
 }
 ```
 
@@ -64,18 +67,19 @@ The reverse-geocode and speed-limit endpoints both take the same input:
 
 ``` json
 {
-    "input": {
-        "lat": 46.866754,
-        "lng": -96.79474
-    },
-    "result": {
-        "placeId": "ChIJpZOQ0-LLyFIRvmnyMbeiQNw",
-        "speedLimit": 25,
-        "units": "MPH"
-    },
-    "date_retrieved": "2016-09-27T19:59:00.669Z",
-    "provider": "google_roads",
-    "errors": []
+	"input": {
+		"lat": 46.86675,
+		"lng": -96.79474
+	},
+	"output": {
+		"placeId": "ChIJpZOQ0-LLyFIRvmnyMbeiQNw",
+		"speedLimit": 25,
+		"units": "MPH"
+	},
+	"extras": {},
+	"date_retrieved": "2017-06-12T19:54:58.749Z",
+	"provider": "googleroads",
+	"errors": []
 }
 ```
 
@@ -84,25 +88,31 @@ The reverse-geocode and speed-limit endpoints both take the same input:
 
 ```json
 {
-  "uptime": "a few seconds",
-  "keys": 7,
-  "providers": [
-    "postgis",
-    "google",
-    "openstreetmap"
-  ],
-  "routes": [
-    "/status",
-    "/reverse-geocode"
-  ],
-  "stats": {
-    "lookups": {
-      "google": 14,
-      "postgis": 2
-    }
-  },
-  "version": "1.1.1",
-  "redis": "see: https://github.com/NodeRedis/node_redis#clientserver_info"
+	"uptime": "2 minutes",
+	"keys": 8,
+	"providers": [
+		"postgis",
+		"googleroads",
+		"google",
+		"openstreetmap"
+	],
+	"routes": [
+		"/status",
+		"/reverse-geocode",
+		"/speed-limit"
+	],
+	"stats": {
+		"lookups": {
+			"reverse_geocode": {
+				"google": 5
+			},
+			"speed_limit": {
+				"googleroads": 4
+			}
+		}
+	},
+	"version": "2.0.0",
+	"redis": "see: https://github.com/NodeRedis/node_redis#clientserver_info"
 }
 ```
 
