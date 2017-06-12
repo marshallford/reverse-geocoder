@@ -8,11 +8,6 @@ import api from '~/api'
 import config from '~/config'
 import { toBoolean } from '~/utils'
 
-// remove console logging if testing
-if (process.env.NODE_ENV === 'test') {
-  winston.remove(winston.transports.Console)
-}
-
 // define web server
 const app = express()
 app.server = http.createServer(app)

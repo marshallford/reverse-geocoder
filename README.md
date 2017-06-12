@@ -164,7 +164,7 @@ user=ubuntu
 stopasgroup=true
 ```
 
-As far as installing Node is concerned, I suggest using the [NodeSource repositories](https://github.com/nodesource/distributions) to get the latest version. Lastly, the app does require a Redis instance to cache results, you can change the Redis connection config via the `redis` key in `config/index.js`.
+As far as installing Node is concerned, I suggest using the [NodeSource repositories](https://github.com/nodesource/distributions) to get the latest version. Lastly, the app does require a Redis instance to cache results, you can change the Redis connection config via the `redis.options` key.
 
 ## Bugs?
 

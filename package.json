@@ -9,6 +9,7 @@
   "private": true,
   "scripts": {
     "test": "better-npm-run test",
+    "test:watch": "better-npm-run test:watch",
     "lint": "better-npm-run lint",
     "dev": "better-npm-run dev",
     "prestart": "better-npm-run prestart",
@@ -16,13 +17,19 @@
   },
   "betterScripts": {
     "test": {
+      "command": "mocha --reporter spec --compilers js:babel-core/register",
+      "env": {
+        "NODE_ENV": "test"
+      }
+    },
+    "test:watch": {
       "command": "mocha --watch --reporter spec --compilers js:babel-core/register",
       "env": {
         "NODE_ENV": "test"
       }
     },
     "lint": {
-      "command": "eslint src",
+      "command": "eslint src test",
       "env": {
         "NODE_ENV": "development"
       }
