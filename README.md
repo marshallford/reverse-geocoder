@@ -118,6 +118,8 @@ The reverse-geocode and speed-limit endpoints both take the same input:
 
 ### General configuration options
 
+See `src/config/config.sample.js` for an example of a typical configuration.
+
 |Key|Description|
 |---|-----------|
 |`truncate`|number of decimal points to truncate off the lat and long|
@@ -133,7 +135,7 @@ The reverse-geocode and speed-limit endpoints both take the same input:
 |Provider key|Type|Description|
 |------------|----|-----------|
 |`type`|`all`|type of provider, current options: `http`, `pg`|
-|`scope`|`all`|scope of provider, current options: `reverse_geocode`, `speed-limit`|
+|`scope`|`all`|scope of provider, current options: `reverse_geocode`, `speed_limit`|
 |`limit`|`all`|object containing rate limiting value and time period|
 |`priority`|`all`|signifies the order in which providers will be used in scope. A value of `0` will disable the provider, `1` is the highest priority|
 |`path`|`all`|the dot notation path of where the address is in the response|
