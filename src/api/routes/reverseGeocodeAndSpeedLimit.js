@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import winston from 'winston'
 import _ from 'lodash'
-import { latlng, latlngValidator, toBoolean, providers, ProviderError } from '~/utils'
+import { latlng, latlngValidator, toBoolean, providers as resolvedProviders, ProviderError } from '~/utils'
 import config from '~/config'
 import client from '~/redis'
 import types from '~/providerTypes'
@@ -19,7 +19,7 @@ const reverseGeocodeAndSpeedLimitRoute = (scope) => {
     }
 
     // check for cached value
-    if (!toBoolean(req.query.skipCache) && !toBoolean(req.query.replaceCache)) {
+    if ([req.query.skipCache, req.query.replaceCache, req.query.allProviders].every(el => !toBoolean(el))) {
       try {
         const reply = await client.getAsync(prefixedlatlng(input.lat, input.lng))
         if (reply !== null) {
@@ -35,17 +35,19 @@ const reverseGeocodeAndSpeedLimitRoute = (scope) => {
     }
 
     // Missed cache
-    let result, provider
+    const providersInScope = resolvedProviders.filter(provider => config.providers[provider].scope === scope)
+
+    const results = {}
     const errors = []
-    const providersInScope = providers.filter(provider => config.providers[provider].scope === scope)
+    let provider
 
     // iterate over providers in the request scope
     for (let index in providersInScope) {
       provider = providersInScope[index]
       const info = config.providers[provider]
       try {
-        result = await types[info.type](provider, info, input)
-        break
+        results[provider] = (await types[info.type](provider, info, input))
+        if (!toBoolean(req.query.allProviders)) break
       } catch (err) {
         if (err instanceof ProviderError) {
           errors.push(err.message)
@@ -54,16 +56,16 @@ const reverseGeocodeAndSpeedLimitRoute = (scope) => {
         }
       }
     }
-    if (!result) {
+    if (_.isEmpty(results)) {
       // no valid providers
-      return res.status(500).json({ errors })
+      return res.status(400).json({ errors })
     } else {
       // add valid result to cache, updates stats
       const date = new Date().toISOString()
-      // add provider's response to the cache
-      if (!toBoolean(req.query.skipCache)) {
+      // add provider's rif (toBoolean(req.query.allProviders))esponse to the cache
+      if ([req.query.skipCache, req.query.allProviders].every(el => !toBoolean(el))) {
         const key = prefixedlatlng(input.lat, input.lng)
-        const value = JSON.stringify({ ...result, date_retrieved: date, provider, errors })
+        const value = JSON.stringify({ ...results[provider], date_retrieved: date, provider, errors })
         try {
           _.has(config, 'redis.ttl') ? client.setAsync(key, value, 'EX', config.redis.ttl) : client.setAsync(key, value)
         } catch (err) {
@@ -84,7 +86,11 @@ const reverseGeocodeAndSpeedLimitRoute = (scope) => {
         }
       }
       // return result to client
-      return res.set('redis', 'MISS').json({ input, ...result, date_retrieved: date, provider, errors })
+      if (toBoolean(req.query.allProviders)) {
+        return res.set('redis', 'MISS').json({ input, results, date_retrieved: date, errors })
+      } else {
+        return res.set('redis', 'MISS').json({ input, ...results[provider], date_retrieved: date, provider, errors })
+      }
     }
   })
   return r

@@ -11,6 +11,7 @@
 * Check system status via `GET: /api/v1/status`
 * Skip over cache with `?skipCache=true`
 * Replace cache with `?replaceCache=true`
+* Test all providers with `?allProviders=true`
 
 ## Getting started
 
