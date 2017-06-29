@@ -91,12 +91,16 @@ The reverse-geocode and speed-limit endpoints both take the same input:
 {
   "uptime": "2 minutes",
   "keys": 8,
-  "providers": [
-    "postgis",
-    "googleroads",
-    "google",
-    "openstreetmap"
-  ],
+  "providers": {
+    "reverse_geocode": [
+      "postgis",
+  		"google",
+  		"openstreetmap"
+  	],
+  	"speed_limit": [
+      "googleroads"
+  	]
+  },
   "routes": [
     "/status",
     "/reverse-geocode",
