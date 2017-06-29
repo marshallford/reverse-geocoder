@@ -1,6 +1,6 @@
 {
   "name": "reverse-geocoder",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "An opinionated, but ideally up to date NodeJS project boilerplate with ESnext support",
   "main": "src/server.js",
   "engines": {

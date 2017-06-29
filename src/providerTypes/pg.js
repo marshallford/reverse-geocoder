@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import winston from 'winston'
 import config from '~/config'
-import { latlng, providers, ProviderError } from '~/utils'
+import { latlng, resolvedProviders, ProviderError } from '~/utils'
 import pg from 'pg'
 
 const pgProvider = async (name, provider, input) => {
@@ -55,7 +55,7 @@ const pgProvider = async (name, provider, input) => {
 
 // define postgres databases based on provider's config
 const dbs = {}
-providers
+resolvedProviders
   .filter(providerName => config.providers[providerName].type === 'pg')
   .forEach(providerName => {
     dbs[providerName] = new pg.Pool({ max: 1, ..._.pick(config.providers[providerName], ['host', 'port', 'database', 'user', 'password']) })
@@ -69,7 +69,7 @@ providers
       winston.error('idle pg client error', err.message, err.stack)
     })
   }
-)
+  )
 
 export { dbs }
 export default pgProvider

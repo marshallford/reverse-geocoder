@@ -1,12 +1,12 @@
 import { Router } from 'express'
 import winston from 'winston'
 import _ from 'lodash'
-import { latlng, latlngValidator, toBoolean, providers as resolvedProviders, ProviderError } from '~/utils'
+import { latlng, latlngValidator, toBoolean, resolvedProviders, ProviderError } from '~/utils'
 import config from '~/config'
 import client from '~/redis'
 import types from '~/providerTypes'
 
-const reverseGeocodeAndSpeedLimitRoute = (scope) => {
+const reverseGeocodeAndSpeedLimit = (scope) => {
   let r = Router()
   r.post('/', async (req, res) => {
     const prefixedlatlng = (lat, lng) => `${scope}/${latlng(lat, lng)}`
@@ -96,4 +96,4 @@ const reverseGeocodeAndSpeedLimitRoute = (scope) => {
   return r
 }
 
-export default reverseGeocodeAndSpeedLimitRoute
+export default reverseGeocodeAndSpeedLimit

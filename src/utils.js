@@ -42,11 +42,17 @@ const toBoolean = (input, truthy = ['true', 'yes', 'on']) => {
 }
 
 // get list of providers to use
-const providers = Object.keys(config.providers)
+const resolvedProviders = Object.keys(config.providers)
   .filter(provider => config.providers[provider].priority > 0)
   .sort((x, y) => config.providers[x].priority - config.providers[y].priority)
   .map(provider => provider)
 
+const providersByScope = {}
+resolvedProviders.forEach(provider => {
+  let scope = config.providers[provider].scope
+  providersByScope[scope] ? providersByScope[scope].push(provider) : providersByScope[scope] = [provider]
+})
+
 class ProviderError extends Error {}
 
-export { latlng, latlngValidator, truncate, toBoolean, providers, ProviderError }
+export { latlng, latlngValidator, truncate, toBoolean, resolvedProviders, providersByScope, ProviderError }
