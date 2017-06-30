@@ -1,11 +1,10 @@
 import _ from 'lodash'
 import axios from 'axios'
-import winston from 'winston'
-import config from '~/config'
+import logger from '~/logger'
 import { latlng, ProviderError } from '~/utils'
 
 const httpProvider = async (name, provider, input) => {
-  if (config.log > 1) winston.info(`${name}: ${latlng(input.lat, input.lng)}`)
+  logger.debug(`${name}: ${latlng(input.lat, input.lng)}`)
 
   // get response
   let response
@@ -13,7 +12,7 @@ const httpProvider = async (name, provider, input) => {
     response = await axios.get(provider.url(input.lat, input.lng, provider.key), { timeout: provider.timeout })
   } catch (err) {
     const msg = `${name}: could not connect to provider`
-    if (config.log > 1) winston.info(msg)
+    logger.debug(msg)
     throw new ProviderError(msg)
   }
 
@@ -21,14 +20,14 @@ const httpProvider = async (name, provider, input) => {
   const result = _.get(response, provider.path)
   if (!result) {
     const msg = `${name}: not a valid provider path or no data available`
-    if (config.log > 1) winston.info(msg)
+    logger.debug(msg)
     throw new ProviderError(msg)
   }
 
   // get extra data if possible
   let extras = {}
   if (!provider.extrasPath || !provider.extras) {
-    if (config.log > 1) winston.info(`${name}: missing config options for extras`)
+    logger.debug(`${name}: missing config options for extras`)
   } else {
     extras = provider.extras(_.get(response, provider.extrasPath))
   }
@@ -38,14 +37,14 @@ const httpProvider = async (name, provider, input) => {
     provider.failures.forEach((failure) => {
       if (!_.get(response, failure)) {
         const msg = `${name}: data contains failure condition, passing over result`
-        if (config.log > 1) winston.info(msg)
+        logger.debug(msg)
         throw ProviderError(msg)
       }
     })
   }
 
   // success
-  if (config.log > 1) winston.info(`${name}: (${JSON.stringify(result, null, 2)})`)
+  logger.debug(`${name}: (${JSON.stringify(result, null, 2)})`)
   return {
     output: result,
     extras,

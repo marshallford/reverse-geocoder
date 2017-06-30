@@ -2,11 +2,14 @@ import http from 'http' // HTTP Server
 import express from 'express' // HTTP improvements
 import bodyParser from 'body-parser' // Parse JSON
 import cors from 'cors' // Cross-origin resource sharing
-import winston from 'winston' // Async logger
+import blocked from 'blocked' // detect if a node event loop is blocked
 
 import api from '~/api'
 import config from '~/config'
+import logger from '~/logger'
 import { toBoolean } from '~/utils'
+
+blocked(ms => logger.warn(`node blocked for ${ms}ms`))
 
 // define web server
 const app = express()
@@ -16,7 +19,7 @@ app.use(bodyParser.json())
 // bodyParser error handling
 app.use((err, req, res, next) => {
   if (err instanceof SyntaxError && err.statusCode === 400) {
-    winston.error('likely a bodyParser error', err.message, err.stack)
+    logger.error('likely a bodyParser error', err.message, err.stack)
     res.status(400).json({ errors: ['invalid json'] })
   } else {
     next(err)
@@ -28,12 +31,10 @@ if (toBoolean(config.cors)) {
 }
 
 // logging middleware
-if (config.log > 0) {
-  app.use((req, res, next) => {
-    winston.info(`${new Date().toISOString()} ${req.method} ${req.path}`)
-    next()
-  })
-}
+app.use((req, res, next) => {
+  logger.verbose(`${new Date().toISOString()} ${req.method} ${req.path}`)
+  next()
+})
 
 // define routes here, before catch-all functions, after cors setup and logging middlware
 app.use('/api/v1', api())
@@ -45,7 +46,7 @@ app.use((req, res) => {
 
 // 500
 app.use((err, req, res, next) => {
-  winston.error('catch-all error', err.message, err.stack)
+  logger.error('catch-all error', err.message, err.stack)
   res.status(500).json({ errors: ['catch-all server error, check the logs'] })
 })
 

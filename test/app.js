@@ -5,7 +5,7 @@ import chai from 'chai'
 import chaiHttp from 'chai-http'
 import app from '~/app'
 import client from '~/redis'
-import { removeLogging } from './helpers'
+import { removeLogging } from '~/logger'
 
 removeLogging()
 chai.use(chaiHttp)
@@ -24,7 +24,7 @@ const badInputs = [
   { lat: '50', lng: '50' },
 ]
 
-describe('status endpoint', async () => {
+describe('status endpoint', () => {
   before(async () => {
     await client.flushdbAsync()
   })
@@ -37,7 +37,11 @@ describe('status endpoint', async () => {
 })
 
 const reverseGeocodeEndpoint = '/api/v1/reverse-geocode'
-describe('reverse-geocode endpoint', async () => {
+describe('reverse-geocode endpoint', () => {
+  before(async () => {
+    await client.flushdbAsync()
+  })
+
   const input = { lat: 50, lng: 50 }
   it('cache miss', async () => {
     const res = await chai.request(app).post(reverseGeocodeEndpoint).send(input)
@@ -83,7 +87,10 @@ describe('reverse-geocode endpoint', async () => {
   })
 })
 
-describe('speed-limit endpoint', async () => {
+describe('speed-limit endpoint', () => {
+  before(async () => {
+    await client.flushdbAsync()
+  })
   const input = { lat: 46.86675, lng: -96.79474 }
   it('cache miss', async () => {
     const res = await chai.request(app).post('/api/v1/speed-limit').send(input)

@@ -1,6 +1,6 @@
 const config = {
   truncate: 5,
-  log: parseInt(process.env['REVERSE_GEOCODER_LOG']) || 0,
+  log: process.env['REVERSE_GEOCODER_LOG_LEVEL'] || 'info',
   redis: {
     options: {
       host: '127.0.0.1',

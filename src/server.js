@@ -1,5 +1,5 @@
 import 'babel-polyfill' // https://babeljs.io/docs/usage/polyfill/
-import winston from 'winston'
+import logger from '~/logger'
 import cluster from 'cluster'
 import os from 'os'
 import client from '~/redis'
@@ -16,22 +16,22 @@ if (cluster.isMaster) {
   }
 
   cluster.on('online', (worker) => {
-    winston.info(`worker ${worker.process.pid} is up`)
+    logger.info(`worker ${worker.process.pid} is up`)
   })
 
   cluster.on('exit', (worker) => {
-    winston.error(`worker ${worker.process.pid} is down`)
+    logger.error(`worker ${worker.process.pid} is down`)
     cluster.fork()
   })
 } else {
   // connect to redis, then start HTTP server
   client.on('connect', () => {
     app.server.listen(config.port, () => {
-      winston.info(`starting server: http://localhost:${app.server.address().port} (${cluster.worker.process.pid})`)
+      logger.info(`starting server: http://localhost:${app.server.address().port} (${cluster.worker.process.pid})`)
     })
   })
   // catch redis connection errors
   client.on('error', (err) => {
-    winston.error('redis client error', err.message, err.stack)
+    logger.error('redis client error', err.message, err.stack)
   })
 }

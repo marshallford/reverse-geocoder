@@ -1,8 +1,8 @@
 import { Router } from 'express'
-import winston from 'winston'
 import _ from 'lodash'
 import { latlng, latlngValidator, toBoolean, resolvedProviders, ProviderError } from '~/utils'
 import config from '~/config'
+import logger from '~/logger'
 import client from '~/redis'
 import types from '~/providerTypes'
 
@@ -82,7 +82,7 @@ const reverseGeocodeAndSpeedLimit = (scope) => {
           }
           await client.setAsync(config.stats.redisKey, JSON.stringify(stats))
         } catch (err) {
-          winston.error(`${provider}: could not get/set stats key or could not parse key`)
+          logger.error(`${provider}: could not get/set stats key or could not parse key`)
         }
       }
       // return result to client

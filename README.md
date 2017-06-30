@@ -128,7 +128,7 @@ See `src/config/config.sample.js` for an example of a typical configuration.
 |Key|Description|
 |---|-----------|
 |`truncate`|number of decimal points to truncate off the lat and long|
-|`log`|`0`: no info logging, `1`: per request logging, `2`: per request logging + per provider messages|
+|`log`|[npm logging level](https://www.npmjs.com/package/winston#logging-levels), the max level logged|
 |`redis.options`|[redis options](https://github.com/NodeRedis/node_redis#options-object-properties)|
 |`redis.ttl`|time to live for redis keys|
 |`port`|the port that express (http) will listen on|
