@@ -6,9 +6,14 @@ import logger from '~/logger'
 import client from '~/redis'
 import types from '~/providerTypes'
 
+const queryParamsToBool = (req, res, next) => {
+  ['skipCache', 'replaceCache', 'allProviders'].forEach(el => { req.query[el] = toBoolean(req.query[el]) })
+  next()
+}
+
 const reverseGeocodeAndSpeedLimit = (scope) => {
   let r = Router()
-  r.post('/', async (req, res) => {
+  r.post('/', queryParamsToBool, async (req, res) => {
     const prefixedlatlng = (lat, lng) => `${scope}/${latlng(lat, lng)}`
 
     let input
@@ -19,7 +24,7 @@ const reverseGeocodeAndSpeedLimit = (scope) => {
     }
 
     // check for cached value
-    if ([req.query.skipCache, req.query.replaceCache, req.query.allProviders].every(el => !toBoolean(el))) {
+    if ([req.query.skipCache, req.query.replaceCache, req.query.allProviders].every(el => !el)) {
       try {
         const reply = await client.getAsync(prefixedlatlng(input.lat, input.lng))
         if (reply !== null) {
@@ -46,8 +51,8 @@ const reverseGeocodeAndSpeedLimit = (scope) => {
       provider = providersInScope[index]
       const info = config.providers[provider]
       try {
-        results[provider] = (await types[info.type](provider, info, input))
-        if (!toBoolean(req.query.allProviders)) break
+        results[provider] = await types[info.type](provider, info, input)
+        if (!req.query.allProviders) break
       } catch (err) {
         if (err instanceof ProviderError) {
           errors.push(err.message)
@@ -62,8 +67,8 @@ const reverseGeocodeAndSpeedLimit = (scope) => {
     } else {
       // add valid result to cache, updates stats
       const date = new Date().toISOString()
-      // add provider's rif (toBoolean(req.query.allProviders))esponse to the cache
-      if ([req.query.skipCache, req.query.allProviders].every(el => !toBoolean(el))) {
+      // add provider's response to the cache
+      if ([req.query.skipCache, req.query.allProviders].every(el => !el)) {
         const key = prefixedlatlng(input.lat, input.lng)
         const value = JSON.stringify({ ...results[provider], date_retrieved: date, provider, errors })
         try {
@@ -86,7 +91,7 @@ const reverseGeocodeAndSpeedLimit = (scope) => {
         }
       }
       // return result to client
-      if (toBoolean(req.query.allProviders)) {
+      if (req.query.allProviders) {
         return res.set('redis', 'MISS').json({ input, results, date_retrieved: date, errors })
       } else {
         return res.set('redis', 'MISS').json({ input, ...results[provider], date_retrieved: date, provider, errors })

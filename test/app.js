@@ -61,7 +61,23 @@ describe('reverse-geocode endpoint', () => {
     expect(res.body.input).to.deep.equal(input)
   })
 
-  it('allProviders query', async () => {
+  it('cache miss with skipCache param', async () => {
+    const res = await chai.request(app).post(`${reverseGeocodeEndpoint}?skipCache=true`).send(input)
+    expect(res).to.have.status(200)
+    expect(res).to.have.header('redis', 'MISS')
+    expect(res).to.be.json
+    expect(res.body).to.have.all.keys('input', 'output', 'extras', 'date_retrieved', 'provider', 'errors')
+    expect(res.body.input).to.deep.equal(input)
+  })
+
+  it('cache miss and replace with replaceCache param', async () => {
+    const orginal = await chai.request(app).post(reverseGeocodeEndpoint).send(input)
+    await chai.request(app).post(`${reverseGeocodeEndpoint}?replaceCache=true`).send(input)
+    const replaced = await chai.request(app).post(reverseGeocodeEndpoint).send(input)
+    expect(orginal.body.date_retrieved).to.not.equal(replaced.body.date_retrieved)
+  })
+
+  it('allProviders param', async () => {
     const res = await chai.request(app).post(`${reverseGeocodeEndpoint}?allProviders=true`).send(input)
     expect(res).to.have.status(200)
     expect(res).to.have.header('redis', 'MISS')
@@ -76,7 +92,7 @@ describe('reverse-geocode endpoint', () => {
       const input = badInputs[index]
       // https://github.com/chaijs/chai-http/issues/75#issuecomment-300898371
       try {
-        await chai.request(app).post('/api/v1/reverse-geocode').send(input)
+        await chai.request(app).post(reverseGeocodeEndpoint).send(input)
         expect(true).to.be.false // Fail the test
       } catch (err) {
         expect(err.response).to.have.status(400)
@@ -87,13 +103,14 @@ describe('reverse-geocode endpoint', () => {
   })
 })
 
+const speedLimitEndpoint = '/api/v1/speed-limit'
 describe('speed-limit endpoint', () => {
   before(async () => {
     await client.flushdbAsync()
   })
   const input = { lat: 46.86675, lng: -96.79474 }
   it('cache miss', async () => {
-    const res = await chai.request(app).post('/api/v1/speed-limit').send(input)
+    const res = await chai.request(app).post(speedLimitEndpoint).send(input)
     expect(res).to.have.status(200)
     expect(res).to.have.header('redis', 'MISS')
     expect(res).to.be.json
@@ -102,7 +119,7 @@ describe('speed-limit endpoint', () => {
   })
 
   it('cache hit', async () => {
-    const res = await chai.request(app).post('/api/v1/speed-limit').send(input)
+    const res = await chai.request(app).post(speedLimitEndpoint).send(input)
     expect(res).to.have.status(200)
     expect(res).to.have.header('redis', 'HIT')
     expect(res).to.be.json
@@ -110,8 +127,24 @@ describe('speed-limit endpoint', () => {
     expect(res.body.input).to.deep.equal(input)
   })
 
-  it('allProviders query', async () => {
-    const res = await chai.request(app).post(`${reverseGeocodeEndpoint}?allProviders=true`).send(input)
+  it('cache miss with skipCache param', async () => {
+    const res = await chai.request(app).post(`${speedLimitEndpoint}?skipCache=true`).send(input)
+    expect(res).to.have.status(200)
+    expect(res).to.have.header('redis', 'MISS')
+    expect(res).to.be.json
+    expect(res.body).to.have.all.keys('input', 'output', 'extras', 'date_retrieved', 'provider', 'errors')
+    expect(res.body.input).to.deep.equal(input)
+  })
+
+  it('cache miss and replace with replaceCache param', async () => {
+    const orginal = await chai.request(app).post(speedLimitEndpoint).send(input)
+    await chai.request(app).post(`${speedLimitEndpoint}?replaceCache=true`).send(input)
+    const replaced = await chai.request(app).post(speedLimitEndpoint).send(input)
+    expect(orginal.body.date_retrieved).to.not.equal(replaced.body.date_retrieved)
+  })
+
+  it('allProviders param', async () => {
+    const res = await chai.request(app).post(`${speedLimitEndpoint}?allProviders=true`).send(input)
     expect(res).to.have.status(200)
     expect(res).to.have.header('redis', 'MISS')
     expect(res).to.be.json
@@ -125,7 +158,7 @@ describe('speed-limit endpoint', () => {
       const input = badInputs[index]
       // https://github.com/chaijs/chai-http/issues/75#issuecomment-300898371
       try {
-        await chai.request(app).post('/api/v1/reverse-geocode').send(input)
+        await chai.request(app).post(speedLimitEndpoint).send(input)
         expect(true).to.be.false // Fail the test
       } catch (err) {
         expect(err.response).to.have.status(400)
