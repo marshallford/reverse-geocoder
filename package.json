@@ -4,7 +4,7 @@
   "description": "An opinionated, but ideally up to date NodeJS project boilerplate with ESnext support",
   "main": "src/server.js",
   "engines": {
-    "node": ">=6.0.0"
+    "node": ">=8.0.0"
   },
   "private": true,
   "scripts": {
@@ -19,29 +19,33 @@
     "test": {
       "command": "mocha --reporter spec --compilers js:babel-core/register",
       "env": {
-        "NODE_ENV": "test"
+        "NODE_ENV": "test",
+        "BABEL_ENV": "test"
       }
     },
     "test:watch": {
       "command": "mocha --watch --reporter spec --compilers js:babel-core/register",
       "env": {
-        "NODE_ENV": "test"
+        "NODE_ENV": "test",
+        "BABEL_ENV": "test"
       }
     },
     "lint": {
       "command": "eslint src test",
       "env": {
-        "NODE_ENV": "development"
+        "NODE_ENV": "development",
+        "BABEL_ENV": "development"
       }
     },
     "dev": {
       "command": "nodemon --exec babel-node src/server.js",
       "env": {
-        "NODE_ENV": "development"
+        "NODE_ENV": "development",
+        "BABEL_ENV": "development"
       }
     },
     "prestart": {
-      "command": "rimraf dist && babel --s inline --copy-files src -d dist",
+      "command": "rimraf dist && babel --source-maps inline --copy-files src --out-dir dist --quiet",
       "env": {
         "NODE_ENV": "production",
         "BABEL_ENV": "production"
@@ -50,7 +54,8 @@
     "start": {
       "command": "node dist/server.js",
       "env": {
-        "NODE_ENV": "production"
+        "NODE_ENV": "production",
+        "BABEL_ENV": "production"
       }
     }
   },
@@ -69,16 +74,16 @@
     "babel-eslint": "^7.2.3",
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-polyfill": "^6.23.0",
-    "babel-preset-env": "^1.5.2",
+    "babel-preset-env": "^1.6.0",
     "babel-root-import": "^4.1.8",
     "better-npm-run": "0.0.15",
     "chai": "^4.0.2",
     "chai-http": "^3.0.0",
-    "eslint": "^3.19.0",
+    "eslint": "^4.2.0",
     "eslint-config-standard": "^10.2.1",
     "eslint-plugin-babel": "^4.1.1",
-    "eslint-plugin-import": "^2.3.0",
-    "eslint-plugin-node": "^5.0.0",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-node": "^5.1.0",
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-standard": "^3.0.1",
     "mocha": "^3.4.2",
@@ -92,10 +97,10 @@
     "body-parser": "^1.17.2",
     "cors": "^2.8.3",
     "express": "^4.15.3",
-    "limiter": "^1.1.0",
+    "limiter": "^1.1.2",
     "lodash": "^4.17.4",
     "moment": "^2.18.1",
-    "pg": "^6.2.4",
+    "pg": "^6.4.0",
     "redis": "^2.7.1",
     "winston": "^2.3.1"
   }
