@@ -36,6 +36,13 @@ describe('status endpoint', () => {
   })
 })
 
+describe('health endpoint', () => {
+  it('responds correctly', async () => {
+    const res = await chai.request(app).get('/api/v1/health')
+    expect(res).to.have.status(204)
+  })
+})
+
 const reverseGeocodeEndpoint = '/api/v1/reverse-geocode'
 describe('reverse-geocode endpoint', () => {
   before(async () => {
